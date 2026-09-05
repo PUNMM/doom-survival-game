@@ -1,0 +1,14 @@
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 依赖目录
+node_modules/
+
+# 本地备份与个人存档（不入公开仓库）
+*.bak_*
+doomsday-save-backup-*.json
+
+# 编辑器配置
+.vscode/
+.idea/

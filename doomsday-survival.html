@@ -1,0 +1,2526 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<title>末日活下来</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=LXGW+WenKai:wght@400;700&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;min-height:100vh;background:#000;color:#fff;font-family:"LXGW WenKai","Noto Sans SC","PingFang SC","Microsoft YaHei",Arial,sans-serif;font-weight:400;user-select:none;overflow-x:hidden}
+body::before{content:"";position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999;pointer-events:none;background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.02) 0,rgba(255,255,255,.02) 1px,transparent 1px,transparent 3px)}
+.container{max-width:480px;margin:0 auto;padding:14px 14px 40px;min-height:100vh;display:flex;flex-direction:column;gap:12px;position:relative}
+.page{display:none;flex-direction:column;gap:12px;animation:fade .45s ease}
+.page.active{display:flex}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.header-title{text-align:center;font-size:16px;font-weight:700;letter-spacing:6px;padding:6px 0 10px;border-bottom:1px solid #222;color:#fff;position:relative}
+.status-panel{border:1px solid #333;padding:10px 12px;background:#111}
+.status-item{margin-bottom:8px}
+.status-item:last-child{margin-bottom:0}
+.status-label{display:flex;justify-content:space-between;font-size:12px;letter-spacing:2px;margin-bottom:4px;color:#ccc}
+.status-label .value{font-size:12px}
+.status-label .value.low{color:#ff3b30;animation:blink 1s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.progress-bar{width:100%;height:6px;background:#222;overflow:hidden}
+.progress-fill{height:100%;background:#fff;transition:width .5s ease}
+.progress-fill.low{background:#ff3b30;animation:glitch .3s infinite}
+@keyframes glitch{0%,100%{transform:translateX(0)}20%{transform:translateX(-2px)}40%{transform:translateX(2px)}60%{transform:translateX(-1px)}80%{transform:translateX(1px)}}
+.top-info-bar{display:flex;justify-content:space-between;gap:8px;padding:8px 12px;border:1px solid #333;background:#0a0a0a;align-items:center}
+.top-info-item{display:flex;align-items:center;gap:5px;font-size:13px}
+.top-info-item .label{color:#666;font-size:11px;letter-spacing:2px}
+.top-info-item .num{font-weight:bold}
+.shop-icon{padding:4px 10px;border:1px solid #fff;font-size:11px;letter-spacing:2px;background:transparent;color:#fff;cursor:pointer;font-family:inherit}
+.shop-icon:hover{background:#fff;color:#000}
+.time-slots{display:flex;gap:2px}
+.time-slot{width:12px;height:12px;border:1px solid #555;font-size:8px;display:flex;align-items:center;justify-content:center;color:#666}
+.time-slot.past{background:#333;color:#888}
+.time-slot.current{background:#ff3b30;border-color:#ff3b30;color:#fff;animation:blink .8s infinite}
+.day-counter{text-align:center;padding:12px;border:1px solid #333;background:#0a0a0a}
+.day-label{font-size:11px;letter-spacing:5px;color:#666;margin-bottom:2px}
+.day-number{font-size:45px;font-weight:900;letter-spacing:4px;line-height:1;text-shadow:1px 0 #ff3b30,-1px 0 #00d4ff}
+.day-unit{font-size:12px;letter-spacing:4px;color:#999;margin-top:4px}
+.story-box{border:1px solid #333;padding:14px;background:#111;min-height:110px;position:relative}
+.story-box::after{content:"▊";color:#fff;animation:blink 1s infinite;margin-left:2px}
+.story-text{font-size:14px;line-height:1.9;letter-spacing:1px;color:#ddd;white-space:pre-wrap}
+.choices{display:flex;gap:8px;margin-top:auto}
+.choices.side-by-side{flex-direction:row}
+.choices.side-by-side .choice-btn{flex:1}
+.choice-btn{flex:1;padding:16px 8px;background:transparent;border:2px solid #fff;color:#fff;font-size:14px;letter-spacing:3px;cursor:pointer;transition:.2s;font-family:inherit}
+.choice-btn:hover:not(:disabled){background:#fff;color:#000}
+.choice-btn:active{transform:scale(.97)}
+.choice-btn:disabled{opacity:.35;cursor:not-allowed;border-color:#555}
+.choice-btn .hint{display:block;font-size:10px;letter-spacing:1px;margin-top:3px;opacity:.5}
+.wide-btn{width:100%;padding:14px;background:#fff;border:none;color:#000;font-size:13px;letter-spacing:4px;cursor:pointer;font-family:inherit;transition:.2s}
+.wide-btn:hover:not(:disabled){background:#ccc}
+.wide-btn:disabled{background:#444;color:#999;cursor:not-allowed}
+.wide-btn.danger{background:transparent;border:2px solid #ff3b30;color:#ff3b30}
+.wide-btn.danger:hover{background:#ff3b30;color:#fff}
+.wide-btn.ghost{background:transparent;border:1px solid #666;color:#aaa}
+.wide-btn.ghost:hover{background:#222;color:#fff}
+.back-bar{display:flex;align-items:center;padding:6px 4px}
+.back-link{font-size:12px;letter-spacing:3px;color:#999;cursor:pointer}
+.back-link:hover{color:#fff}
+.back-title{flex:1;text-align:center;font-size:14px;letter-spacing:4px}
+.section-title{font-size:13px;letter-spacing:4px;color:#ccc;padding:6px 2px;border-bottom:1px solid #444;margin-top:8px;font-weight:bold}
+.meal-slots{display:flex;gap:8px;padding:8px;border:1px solid #333;background:#111}
+.meal-slot{flex:1;height:50px;border:1px dashed #555;display:flex;align-items:center;justify-content:center;font-size:11px;color:#555;cursor:pointer;text-align:center}
+.meal-slot.filled{border-style:solid;border-color:#fff;color:#fff;background:#1a1a1a;flex-direction:column;gap:2px}
+.meal-slot .slot-name{font-size:13px}
+.meal-slot .slot-remove{font-size:10px;color:#ff3b30}
+.meal-legend{font-size:11px;color:#aaa;text-align:center;padding:8px;line-height:1.6;letter-spacing:1px}
+.inv-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;padding:8px;border:1px solid #333;background:#0a0a0a}
+.inv-cell{aspect-ratio:1;border:1px solid #333;background:#111;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;color:#aaa;cursor:pointer;padding:3px;text-align:center;transition:.15s}
+.inv-cell.empty{color:#333;cursor:default}
+.inv-cell:hover:not(.empty){border-color:#fff;background:#1a1a1a}
+.inv-cell .cell-icon{font-size:19px;margin-bottom:1px}
+.inv-cell .cell-name{font-size:10px;line-height:1.2}
+.inv-cell .cell-price{font-size:10px;color:#999;margin-top:1px}
+.carry-section{border:1px solid #333;background:#111;padding:10px}
+.carry-label{font-size:11px;letter-spacing:2px;color:#888;margin-bottom:6px;text-align:center}
+.carry-slots-fixed{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.carry-slot-fixed{aspect-ratio:2.2;border:1px dashed #555;background:#0a0a0a;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;color:#555;cursor:pointer;text-align:center;padding:2px 4px}
+.carry-slot-fixed.filled{border-style:solid;border-color:#fff;color:#fff}
+.carry-slot-fixed .slot-type{font-size:9px;letter-spacing:2px;color:#666;margin-bottom:1px}
+.carry-slot-fixed.filled .slot-type{color:#888}
+.carry-slot-fixed .cell-icon{font-size:19px}
+.carry-slot-fixed .cell-name{font-size:10px;margin-top:1px}
+.carry-slot-fixed .slot-remove{font-size:9px;color:#ff3b30;margin-top:1px}
+#page-out .wide-btn:first-of-type{padding:20px;font-size:15px;letter-spacing:6px}
+#page-building .wide-btn:first-of-type{padding:14px;font-size:13px;letter-spacing:4px}
+.room-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.room-door{height:130px;background:#1e1e1e;border:3px solid #555;cursor:pointer;position:relative;transition:.2s;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:inset 0 0 20px rgba(0,0,0,.6),0 2px 4px rgba(0,0,0,.4)}
+.room-door::before{content:"";position:absolute;right:12px;top:50%;transform:translateY(-50%);width:10px;height:10px;border-radius:50%;background:#bfa060;box-shadow:0 0 6px #666,inset 0 -2px 2px rgba(0,0,0,.4)}
+.room-door::after{content:"";position:absolute;top:0;left:0;right:0;height:4px;background:#3a3a3a;border-bottom:1px solid #444}
+.room-door .door-frame{position:absolute;top:6px;bottom:6px;left:6px;right:6px;border:2px solid #3a3a3a;border-radius:2px;box-shadow:inset 0 0 10px rgba(0,0,0,.5)}
+.room-door .door-label{font-size:17px;letter-spacing:4px;color:#d4d4d4;margin-bottom:4px;position:relative;z-index:1;font-weight:bold;text-shadow:0 1px 2px rgba(0,0,0,.8)}
+.room-door .door-hint{font-size:9px;letter-spacing:2px;color:#666;position:relative;z-index:1}
+.room-door:hover{background:#2a2a2a;border-color:#777}
+.room-door:hover .door-label{color:#fff}
+.room-door.opened{background:#111;cursor:default;opacity:.35;border-color:#333}
+.room-door.opened::before{display:none}
+.room-door.opened::after{display:none}
+.room-door.opened .door-label{color:#555}
+.room-door.opened .door-hint{display:none}
+.result-story{border:1px solid #333;padding:14px;background:#111;font-size:14px;line-height:1.9;color:#ddd;white-space:pre-wrap;min-height:120px}
+.death-title{text-align:center;font-size:41px;font-weight:900;letter-spacing:8px;color:#ff3b30;text-shadow:2px 2px 0 #000;animation:glitch .4s infinite}
+.death-sub{text-align:center;font-size:12px;letter-spacing:4px;color:#666;margin-top:-6px}
+.restart-btn{width:100%;padding:14px;background:transparent;border:2px solid #ff3b30;color:#ff3b30;font-size:13px;letter-spacing:4px;cursor:pointer;font-family:inherit}
+.restart-btn:hover{background:#ff3b30;color:#fff}
+.modal-mask{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center;z-index:99999;padding:20px}
+.modal-mask.show{display:flex}
+.modal{width:100%;max-width:420px;border:1px solid #fff;background:#111;padding:18px;max-height:85vh;overflow-y:auto}
+.modal-title{font-size:15px;letter-spacing:3px;margin-bottom:12px;text-align:center}
+.modal-body{font-size:13px;line-height:1.8;color:#ccc;margin-bottom:14px;white-space:pre-wrap}
+.modal-actions{display:flex;flex-direction:column;gap:6px}
+.modal-item-btn{width:100%;padding:10px;background:#1a1a1a;border:1px solid #333;color:#fff;font-size:12px;letter-spacing:1px;cursor:pointer;font-family:inherit;margin-bottom:5px;text-align:left;display:flex;justify-content:space-between;align-items:center}
+.modal-item-btn:hover{border-color:#fff}
+.modal-item-btn .left{display:flex;align-items:center;gap:6px}
+.modal-item-btn .right{color:#888;font-size:11px}
+.rps-row{display:flex;justify-content:center;gap:10px;margin-bottom:10px}
+.rps-btn{width:60px;height:60px;border:2px solid #fff;background:transparent;color:#fff;font-size:23px;cursor:pointer;font-family:inherit}
+.rps-btn:hover{background:#fff;color:#000}
+.tag{display:inline-block;padding:1px 5px;font-size:10px;letter-spacing:1px;border:1px solid}
+.tag.food{color:#4ade80;border-color:#4ade80}
+.tag.water{color:#60a5fa;border-color:#60a5fa}
+.tag.weapon{color:#fb923c;border-color:#fb923c}
+.tag.tool{color:#a78bfa;border-color:#a78bfa}
+.tag.part{color:#666;border-color:#555}
+.tag.medical{color:#ff3b30;border-color:#ff3b30}
+.tag.entertainment{color:#ffcc00;border-color:#ffcc00}
+.tag.space{color:#22d3ee;border-color:#22d3ee}
+.recipe-item{border:1px solid #333;background:#111;padding:10px;margin-bottom:6px}
+.recipe-ingredients{font-size:12px;color:#aaa;margin-bottom:4px}
+.recipe-result{font-size:13px;color:#fff;margin-bottom:6px}
+.recipe-btn{width:100%;padding:8px;background:#fff;border:none;color:#000;font-size:12px;letter-spacing:2px;cursor:pointer;font-family:inherit}
+.recipe-btn:disabled{background:#444;color:#999;cursor:not-allowed}
+.shop-item{border:1px solid #333;padding:10px;background:#111;display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.shop-item .price{font-size:11px;color:#ffcc00;margin-top:2px}
+.shop-item .buy-btn{padding:6px 10px;background:#fff;color:#000;border:none;font-size:11px;letter-spacing:2px;cursor:pointer;font-family:inherit}
+.shop-item .buy-btn:disabled{background:#444;color:#999;cursor:not-allowed}
+.hint-text{font-size:11px;color:#666;letter-spacing:1px;text-align:center}
+#game-canvas{display:none;width:100%;height:400px;background:#111;border:1px solid #fff;touch-action:none}
+#game-canvas.active{display:block}
+.game-info{display:flex;justify-content:space-between;font-size:12px;letter-spacing:2px;color:#aaa;padding:6px 8px}
+.game-score{color:#4ade80}
+.game-time{color:#ff3b30}
+input[type="text"]{flex:1;background:#000;border:1px solid #555;color:#fff;padding:8px;font-family:inherit;font-size:13px}
+input[type="text"]:focus{outline:none;border-color:#fff}
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="header-title">末 日 活 下 来 <button id="btn-help" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:17px;color:#aaa;border:1px solid #444;border-radius:50%;width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;background:transparent">!</button></div>
+
+    <div id="page-main" class="page active">
+        <div class="status-panel" id="main-status-panel"></div>
+        <div class="top-info-bar" id="main-top-bar"></div>
+        <div class="day-counter">
+            <div class="day-label">SURVIVAL DAY</div>
+            <div class="day-number" id="day-count">1</div>
+            <div class="day-unit">天</div>
+        </div>
+        <div class="story-box"><div class="story-text" id="story-text"></div></div>
+        <div class="choices side-by-side">
+            <button class="choice-btn" id="btn-home">打 开 仓 库</button>
+            <div class="choice-btn-wrap">
+                <button class="choice-btn" id="btn-locked-room" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:8px 4px">
+                    <span>房 间</span>
+                    <span id="locked-room-hint" style="font-size:12px;opacity:.7">已 上 锁</span>
+                </button>
+            </div>
+        </div>
+        <div class="choices side-by-side">
+            <button class="choice-btn" id="btn-out">大 楼 探 索</button>
+            <button class="choice-btn" id="btn-down">街 头 冒 险</button>
+        </div>
+        <button class="wide-btn ghost" id="btn-sleep">睡 觉 · 开 启 新 一 天</button>
+    </div>
+
+    <div id="page-home" class="page">
+        <div class="back-bar" style="position:relative;min-height:32px">
+            <div class="back-link" data-back="main" style="position:absolute;left:0;top:50%;transform:translateY(-50%)">← 客 厅</div>
+            <div class="back-title" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);white-space:nowrap">我 的 家 · 仓 库</div>
+            <div id="btn-clues" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);display:flex;align-items:center;cursor:pointer">
+                <div style="width:24px;height:24px;border:1px solid #ffcc44;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#ffcc44;font-size:15px">📜</div>
+            </div>
+        </div>
+        <div class="section-title">今 日 进 食</div>
+        <div class="meal-slots">
+            <div class="meal-slot" id="meal-food">食物 / 空</div>
+            <div class="meal-slot" id="meal-water">水 / 空</div>
+        </div>
+        <div class="meal-legend">好好吃饭才有力气战斗。<br>本日没有进食，则饱腹及健康下降。<br>食物会在本日结束时自动吃完。</div>
+        <div class="section-title">今 日 药 品</div>
+        <div class="meal-slots" style="justify-content:center">
+            <div class="meal-slot" id="meal-medical" style="max-width:220px">药 品·娱 乐 / 空</div>
+        </div>
+        <div class="meal-legend">医疗物品 → +5健康。娱乐物品 → +5理智。<br>药品/娱乐物品会在本日结束时自动使用完。</div>
+        <div style="display:flex;align-items:center;gap:10px;margin-top:8px;margin-bottom:6px">
+            <div class="section-title" style="margin:0;flex:1;white-space:nowrap;letter-spacing:1px">物 资 仓 库<span id="inv-count" style="font-size:11px;color:#888;margin-left:6px;font-weight:normal;white-space:nowrap"></span></div>
+            <div class="back-link" id="btn-go-craft" style="border:1px solid #fff;padding:4px 10px;border-radius:3px;cursor:pointer;font-size:12px;letter-spacing:2px">🛠️ 工 作 台</div>
+        </div>
+        <div class="inv-grid" id="inv-grid"></div>
+        <button class="wide-btn ghost" data-back="main">回 到 客 厅</button>
+    </div>
+
+    <div id="page-home-craft" class="page">
+        <div class="back-bar">
+            <div class="back-link" id="btn-craft-close">← 关 闭</div>
+            <div class="back-title" style="text-align:center">每 日 合 成</div>
+            <div class="back-link" id="btn-all-recipes" style="border:1px solid #888;padding:2px 6px;border-radius:3px">合 成 表</div>
+        </div>
+        <div id="recipe-list"></div>
+    </div>
+
+    <div id="page-out" class="page">
+        <div class="back-bar" style="position:relative;min-height:32px">
+            <div class="back-link" data-back="main" style="position:absolute;left:0;top:50%;transform:translateY(-50%)">← 返回</div>
+            <div class="back-title" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);white-space:nowrap">外 出 探 索</div>
+            <div style="position:absolute;right:10px;top:50%;transform:translateY(-50%);width:24px;height:24px"></div>
+        </div>
+        <div class="section-title">选 择 你 的 装 备</div>
+        <div class="carry-section">
+            <div class="carry-label">你正在整理你的背包</div>
+            <div class="carry-slots-fixed" id="carry-slots-fixed"></div>
+        </div>
+        <button class="wide-btn" id="btn-building">出 发 · 探 索 大 楼</button>
+        <button class="wide-btn ghost" data-back="main">回 到 家 中</button>
+    </div>
+
+    <div id="page-building" class="page">
+        <div class="back-bar" style="position:relative;min-height:32px">
+            <div class="back-link" data-back="out" style="position:absolute;left:0;top:50%;transform:translateY(-50%)">← 返回</div>
+            <div class="back-title" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);white-space:nowrap">大 楼 内</div>
+            <div style="position:absolute;right:10px;top:50%;transform:translateY(-50%);width:24px;height:24px"></div>
+        </div>
+        <div class="hint-text">每 进 入 一 间 房 需 要 2 个 小 时 探 索</div>
+        <div class="room-cards" id="room-doors"></div>
+        <button class="wide-btn ghost" id="btn-back-home-early">离 开 · 回 家</button>
+    </div>
+
+    <div id="page-down" class="page">
+        <div class="back-bar"><div class="back-title" id="down-location-title">街 头 冒 险</div></div>
+        <div class="hint-text" id="down-hint-top">每 探 险 一 次 需 要 4 个 小 时</div>
+        <div class="game-info">
+            <div>时间 <span class="game-time" id="game-time">30s</span></div>
+        </div>
+        <canvas id="game-canvas" width="440" height="400"></canvas>
+        <button class="wide-btn" id="btn-game-start">开 始 冒 险</button>
+        <div class="result-story" id="game-result-text" style="display:none"></div>
+        <button class="wide-btn ghost" id="btn-game-done" style="display:none">回 到 客 厅</button>
+    </div>
+
+    <div id="page-death" class="page">
+        <div class="death-title">游 戏 结 束</div>
+        <div class="death-sub">GAME OVER</div>
+        <div class="day-counter">
+            <div class="day-label">SURVIVAL DAY</div>
+            <div class="day-number" id="day-count-death">1</div>
+            <div class="day-unit">天</div>
+        </div>
+        <div class="result-story" id="death-reason"></div>
+        <button class="restart-btn" id="btn-restart">重 新 开 始</button>
+    </div>
+</div>
+
+<div class="modal-mask" id="modal"><div class="modal"><div class="modal-title" id="modal-title"></div><div class="modal-body" id="modal-body"></div><div class="modal-actions" id="modal-actions"></div></div></div>
+
+<!-- 背景音乐（Pixabay 免版税，下载后重命名放同目录即可）-->
+<audio id="bgm-home" loop preload="none"></audio>
+<audio id="bgm-explore" loop preload="none"></audio>
+
+<script id="script-part1">
+/* ======= 基础常量 ======= */
+const TIME_SLOTS = ["10:00","12:00","14:00","16:00","18:00","21:00"];
+const ITEM_TYPES = {
+    water_ready:{label:"水成品",tagClass:"water"},
+    food_ready:{label:"食物成品",tagClass:"food"},
+    food_part:{label:"食物零件",tagClass:"part"},
+    medical:{label:"医疗成品",tagClass:"medical"},
+    medical_part:{label:"医疗零件",tagClass:"part"},
+    entertainment:{label:"娱乐成品",tagClass:"entertainment"},
+    entertainment_part:{label:"娱乐零件",tagClass:"part"},
+    tool:{label:"工具成品",tagClass:"tool"},
+    weapon:{label:"武器成品",tagClass:"weapon"},
+    space:{label:"空间用具",tagClass:"space"},
+    part:{label:"工具零件",tagClass:"part"}
+};
+
+const ITEMS = {
+    // ======== 水成品（随机获得 + 合成） ========
+    mineral_water:   {name:"矿泉水",type:"water_ready",icon:"💧",basePrice:25,desc:"干净的饮用水。"},
+    green_tea:       {name:"绿茶",type:"water_ready",icon:"🍵",basePrice:30,desc:"清爽的绿茶。"},
+    coffee:          {name:"咖啡",type:"water_ready",icon:"☕",basePrice:60,desc:"提神的咖啡。"},
+    chocolate_milk:  {name:"巧克力牛奶",type:"water_ready",icon:"🥛",basePrice:50,desc:"香甜的牛奶。"},
+    pearl_milk_tea:  {name:"珍珠奶茶",type:"water_ready",icon:"🧋",basePrice:80,desc:"有珍珠的奶茶。"},
+
+    // ======== 食物成品（随机获得 + 合成） ========
+    jerky:           {name:"肉干",type:"food_ready",icon:"🥓",basePrice:70,desc:"风干的肉。"},
+    soda_crackers:   {name:"苏打饼干",type:"food_ready",icon:"🥨",basePrice:35,desc:"酥脆的饼干。"},
+    chocolate:       {name:"巧克力",type:"food_ready",icon:"🍫",basePrice:50,desc:"补充热量。"},
+    bread:           {name:"面包",type:"food_ready",icon:"🍞",basePrice:40,desc:"普通面包。"},
+    rice:            {name:"米饭",type:"food_ready",icon:"🍚",basePrice:30,desc:"热腾腾的米饭。"},
+    chocolate_cracker:{name:"巧克力饼干",type:"food_ready",icon:"🍪",basePrice:75,desc:"饼干蘸巧克力。"},
+
+    // ======== 食物成品（只能合成） ========
+    fried_egg:       {name:"煎蛋",type:"food_ready",icon:"🍳",basePrice:50,desc:"煎得金黄的蛋。"},
+    batter:          {name:"面糊",type:"food_ready",icon:"🥣",basePrice:45,desc:"可做食物的面糊。"},
+    donut:           {name:"甜甜圈",type:"food_ready",icon:"🍩",basePrice:60,desc:"面包圈加巧克力。"},
+    sandwich:        {name:"简易三明治",type:"food_ready",icon:"🥪",basePrice:90,desc:"肉干夹面包。"},
+    bento:           {name:"简易饭盒",type:"food_ready",icon:"🍱",basePrice:100,desc:"米饭加肉干。"},
+    chicken_can:     {name:"鸡肉罐头",type:"food_ready",icon:"🥫",basePrice:80,desc:"密封的鸡肉。"},
+    beef_can:        {name:"牛肉罐头",type:"food_ready",icon:"🥫",basePrice:90,desc:"密封的牛肉。"},
+    pork_can:        {name:"猪肉罐头",type:"food_ready",icon:"🥫",basePrice:80,desc:"密封的猪肉。"},
+    fish_can:        {name:"鱼肉罐头",type:"food_ready",icon:"🐟",basePrice:65,desc:"密封的鱼。"},
+    dish:            {name:"菜品",type:"food_ready",icon:"🥗",basePrice:55,desc:"简单炒青菜。"},
+    sweet_potato_soup:{name:"番薯汤",type:"food_ready",icon:"🥣",basePrice:50,desc:"甜甜的汤。"},
+    mashed_potato:   {name:"土豆泥",type:"food_ready",icon:"🥔",basePrice:50,desc:"软烂的土豆泥。"},
+    beef_hotpot:     {name:"牛肉火锅",type:"food_ready",icon:"🍲",basePrice:200,desc:"丰盛的火锅。"},
+    pork_hotpot:     {name:"猪肉火锅",type:"food_ready",icon:"🍲",basePrice:200,desc:"丰盛的火锅。"},
+    chicken_hotpot:  {name:"鸡肉火锅",type:"food_ready",icon:"🍲",basePrice:200,desc:"丰盛的火锅。"},
+    fish_hotpot:     {name:"鱼肉火锅",type:"food_ready",icon:"🍲",basePrice:200,desc:"丰盛的火锅。"},
+
+    // ======== 食物零件（随机获得，只能用来合成） ========
+    tap_water:       {name:"自来水",type:"food_part",icon:"🚰",basePrice:5,desc:"从水管接的水。"},
+    bottle:          {name:"瓶子",type:"food_part",icon:"🫙",basePrice:10,desc:"空塑料瓶。"},
+    tea_bag:         {name:"茶包",type:"food_part",icon:"🍵",basePrice:15,desc:"一包茶叶。"},
+    coffee_bean:     {name:"咖啡豆",type:"food_part",icon:"🫘",basePrice:30,desc:"生咖啡豆。"},
+    taro_ball:       {name:"小丸子",type:"food_part",icon:"🍡",basePrice:20,desc:"QQ的小丸子。"},
+    pork:            {name:"猪肉",type:"food_part",icon:"🍖",basePrice:50,desc:"生猪肉。"},
+    beef:            {name:"牛肉",type:"food_part",icon:"🥩",basePrice:60,desc:"生牛肉。"},
+    chicken:         {name:"鸡肉",type:"food_part",icon:"🍗",basePrice:45,desc:"生鸡肉。"},
+    fish:            {name:"鱼肉",type:"food_part",icon:"🐟",basePrice:50,desc:"生鱼肉。"},
+    egg:             {name:"鸡蛋",type:"food_part",icon:"🥚",basePrice:15,desc:"一个鸡蛋。"},
+    rice_pack:       {name:"米包",type:"food_part",icon:"🌾",basePrice:20,desc:"真空包装的米。"},
+    vegetable:       {name:"青菜",type:"food_part",icon:"🥬",basePrice:15,desc:"新鲜青菜。"},
+    sweet_potato:    {name:"番薯",type:"food_part",icon:"🍠",basePrice:18,desc:"甜番薯。"},
+    potato:          {name:"土豆",type:"food_part",icon:"🥔",basePrice:15,desc:"一个土豆。"},
+    milk:            {name:"牛奶",type:"water_ready",icon:"🥛",basePrice:25,desc:"生牛奶。"},
+
+    // ======== 医疗成品（随机获得） ========
+    herb:            {name:"草药",type:"medical",icon:"🌿",basePrice:100,desc:"可以制药的草药。"},
+    painkiller:      {name:"止痛药",type:"medical",icon:"💊",basePrice:180,desc:"缓解疼痛。"},
+    bandage:         {name:"绷带",type:"medical",icon:"🩹",basePrice:120,desc:"包扎伤口。"},
+    alcohol:         {name:"酒精",type:"medical",icon:"🧴",basePrice:100,desc:"消毒用。"},
+
+    // ======== 娱乐成品（随机获得，5%几率） ========
+    radio:           {name:"收音机",type:"entertainment",icon:"📻",basePrice:200,desc:"还能收到频道。"},
+    ping_pong:       {name:"兵乓球拍",type:"entertainment",icon:"🏓",basePrice:120,desc:"能打乒乓球。"},
+    plant:           {name:"盆栽",type:"entertainment",icon:"🌱",basePrice:80,desc:"小盆栽。"},
+    basketball:      {name:"篮球",type:"entertainment",icon:"🏀",basePrice:100,desc:"拍拍球。"},
+    kite:            {name:"风筝",type:"entertainment",icon:"🪁",basePrice:90,desc:"能放风筝。"},
+
+    // ======== 工具成品（随机获得） ========
+    candle:          {name:"蜡烛",type:"tool",icon:"🕯",basePrice:40,desc:"能照明的蜡烛。"},
+    lighter:         {name:"打火机",type:"tool",icon:"🔥",basePrice:100,desc:"点火。"},
+    flashlight:      {name:"手电筒",type:"tool",icon:"🔦",basePrice:90,desc:"需要电池。"},
+
+    // ======== 武器成品（随机获得） ========
+    sharp_stick:     {name:"锋利木棍",type:"weapon",icon:"🪵",basePrice:80,desc:"削尖的木棍。"},
+    kitchen_knife:   {name:"菜刀",type:"weapon",icon:"🔪",basePrice:120,desc:"厨房的菜刀。"},
+    iron_pipe:       {name:"钢管",type:"weapon",icon:"🔧",basePrice:150,desc:"金属管道。"},
+    hammer:          {name:"锤子",type:"weapon",icon:"🔨",basePrice:140,desc:"家用锤子。"},
+    umbrella:        {name:"雨伞",type:"weapon",icon:"🌂",basePrice:80,desc:"能挡雨也能打人。"},
+    plunger:         {name:"马桶塞",type:"weapon",icon:"🪠",basePrice:60,desc:"意外的武器。"},
+
+    // ======== 空间用具（只能合成） ========
+    cloth_bag:       {name:"布袋",type:"space",icon:"👜",basePrice:50,desc:"能装东西。"},
+    backpack:        {name:"书包",type:"space",icon:"🎒",basePrice:80,desc:"能装更多。"},
+    basket:          {name:"篮子",type:"space",icon:"🧺",basePrice:60,desc:"透气的篮子。"},
+    suitcase:        {name:"行李箱",type:"space",icon:"🧳",basePrice:150,desc:"能装很多。"},
+
+    // ======== 工具零件（非食物/非医疗/非娱乐） ========
+    nail:            {name:"钉子",type:"part",icon:"📌",basePrice:15,desc:"零散的钉子。"},
+    wire:            {name:"电线",type:"part",icon:"🔌",basePrice:35,desc:"废弃的电线。"},
+    battery:         {name:"电池",type:"part",icon:"🔋",basePrice:30,desc:"普通电池。"},
+    metal_plate:     {name:"金属板",type:"part",icon:"📋",basePrice:50,desc:"一块废弃金属。"},
+    wood:            {name:"木板",type:"part",icon:"🪵",basePrice:25,desc:"一块木板。"},
+    cloth:           {name:"布",type:"part",icon:"🧵",basePrice:20,desc:"一块旧布。"},
+    tape:            {name:"胶带",type:"part",icon:"🎀",basePrice:40,desc:"万用的胶带。"},
+    rope:            {name:"绳子",type:"part",icon:"🪢",basePrice:60,desc:"结实的绳子。"}
+};
+
+const LOOT_POOL = [
+    // ===== 水成品（随机获得） =====
+    {key:"mineral_water",weight:25},{key:"green_tea",weight:12},{key:"coffee",weight:8},
+    {key:"chocolate_milk",weight:6},{key:"pearl_milk_tea",weight:4},
+    // ===== 食物成品（随机获得） =====
+    {key:"jerky",weight:8},{key:"soda_crackers",weight:15},{key:"chocolate",weight:10},
+    {key:"bread",weight:15},{key:"rice",weight:12},{key:"chocolate_cracker",weight:5},
+    // ===== 食物零件（随机获得） =====
+    {key:"tap_water",weight:25},{key:"bottle",weight:18},{key:"tea_bag",weight:15},
+    {key:"coffee_bean",weight:10},{key:"taro_ball",weight:8},{key:"pork",weight:10},
+    {key:"beef",weight:8},{key:"chicken",weight:12},{key:"fish",weight:10},
+    {key:"egg",weight:15},{key:"rice_pack",weight:12},{key:"vegetable",weight:15},
+    {key:"sweet_potato",weight:12},{key:"potato",weight:14},{key:"milk",weight:12},
+    // ===== 医疗成品（随机获得） =====
+    {key:"herb",weight:8},{key:"painkiller",weight:5},{key:"bandage",weight:10},{key:"alcohol",weight:8},
+    // ===== 娱乐成品（随机获得，5%几率） =====
+    {key:"radio",weight:2},{key:"ping_pong",weight:3},{key:"plant",weight:5},
+    {key:"basketball",weight:3},{key:"kite",weight:3},
+    // ===== 工具成品（随机获得） =====
+    {key:"candle",weight:12},{key:"lighter",weight:8},{key:"flashlight",weight:8},
+    // ===== 武器成品（随机获得） =====
+    {key:"sharp_stick",weight:10},{key:"kitchen_knife",weight:7},
+    {key:"iron_pipe",weight:6},{key:"hammer",weight:6},
+    {key:"umbrella",weight:8},{key:"plunger",weight:10},
+    // ===== 工具零件（随机获得） =====
+    {key:"nail",weight:18},{key:"wire",weight:12},{key:"battery",weight:14},
+    {key:"metal_plate",weight:9},{key:"wood",weight:14},{key:"cloth",weight:15},
+    {key:"tape",weight:12},{key:"rope",weight:10}
+];
+
+const RECIPE_POOL = [
+    // ===== 水 =====
+    {id:"w1",name:"装矿泉水",ingredients:{tap_water:1,bottle:1},result:"mineral_water",qty:3},
+    {id:"w2",name:"泡绿茶",ingredients:{tea_bag:1,mineral_water:1},result:"green_tea",qty:3},
+    {id:"w3",name:"冲咖啡",ingredients:{coffee_bean:1,mineral_water:1},result:"coffee",qty:3},
+    {id:"w4",name:"做巧克力牛奶",ingredients:{chocolate:1,milk:1},result:"chocolate_milk",qty:3},
+    {id:"w5",name:"做珍珠奶茶",ingredients:{tea_bag:1,milk:1,taro_ball:1},result:"pearl_milk_tea",qty:5},
+
+    // ===== 食物 =====
+    {id:"f1",name:"烤猪肉干",ingredients:{pork:1,lighter:1},result:"jerky",qty:3},
+    {id:"f2",name:"煎蛋",ingredients:{egg:1,lighter:1},result:"fried_egg",qty:3},
+    {id:"f3",name:"饼干蘸巧克力",ingredients:{soda_crackers:1,chocolate:1},result:"chocolate_cracker",qty:3},
+    {id:"f4",name:"拌面糊",ingredients:{soda_crackers:1,jerky:1},result:"batter",qty:3},
+    {id:"f5",name:"做甜甜圈",ingredients:{bread:1,chocolate:1},result:"donut",qty:3},
+    {id:"f6",name:"做简易三明治",ingredients:{bread:1,jerky:1},result:"sandwich",qty:3},
+    {id:"f7",name:"做简易饭盒",ingredients:{rice:1,jerky:1},result:"bento",qty:3},
+    {id:"f8",name:"做鸡肉罐头",ingredients:{chicken:1,mineral_water:1},result:"chicken_can",qty:3},
+    {id:"f9",name:"做牛肉罐头",ingredients:{beef:1,mineral_water:1},result:"beef_can",qty:3},
+    {id:"f10",name:"做猪肉罐头",ingredients:{pork:1,mineral_water:1},result:"pork_can",qty:3},
+    {id:"f11",name:"做鱼肉罐头",ingredients:{fish:1,mineral_water:1},result:"fish_can",qty:3},
+    {id:"f12",name:"煮米饭",ingredients:{rice_pack:1,mineral_water:1},result:"rice",qty:3},
+    {id:"f13",name:"炒青菜",ingredients:{vegetable:1,mineral_water:1},result:"dish",qty:3},
+    {id:"f14",name:"煮番薯汤",ingredients:{sweet_potato:1,mineral_water:1},result:"sweet_potato_soup",qty:3},
+    {id:"f15",name:"做土豆泥",ingredients:{potato:1,mineral_water:1},result:"mashed_potato",qty:3},
+    {id:"f16",name:"做牛肉火锅",ingredients:{beef:1,vegetable:1,egg:1},result:"beef_hotpot",qty:5},
+    {id:"f17",name:"做猪肉火锅",ingredients:{pork:1,vegetable:1,egg:1},result:"pork_hotpot",qty:5},
+    {id:"f18",name:"做鸡肉火锅",ingredients:{chicken:1,vegetable:1,egg:1},result:"chicken_hotpot",qty:5},
+    {id:"f19",name:"做鱼肉火锅",ingredients:{fish:1,vegetable:1,egg:1},result:"fish_hotpot",qty:5},
+
+    // ===== 医疗 =====
+    {id:"m1",name:"熬草药",ingredients:{herb:2},result:"painkiller",qty:3},
+    {id:"m2",name:"做绷带",ingredients:{cloth:2,alcohol:1},result:"bandage",qty:2},
+
+    // ===== 娱乐 =====
+    {id:"e1",name:"自制收音机",ingredients:{wire:2,battery:2,metal_plate:1},result:"radio",qty:1},
+    {id:"e2",name:"做兵乓球拍",ingredients:{cloth:2,wood:1},result:"ping_pong",qty:2},
+    {id:"e3",name:"做盆栽",ingredients:{cloth:1,wood:2},result:"plant",qty:1},
+    {id:"e4",name:"做篮球",ingredients:{cloth:1,tape:1},result:"basketball",qty:1},
+    {id:"e5",name:"做风筝",ingredients:{cloth:1,rope:1},result:"kite",qty:1},
+
+    // ===== 工具 =====
+    // 零件互转
+    {id:"t0",name:"拆电线得钉子",ingredients:{wire:1},result:"nail",qty:3},
+    {id:"t0b",name:"接电线",ingredients:{nail:2,battery:1},result:"wire",qty:2},
+    {id:"t0c",name:"拆装电池",ingredients:{nail:2,metal_plate:1},result:"battery",qty:2},
+    // 用品类
+    {id:"t1",name:"做蜡烛",ingredients:{tape:1,wood:1},result:"candle",qty:3},
+    {id:"t2",name:"自制打火机",ingredients:{nail:2,wire:1,metal_plate:1},result:"lighter",qty:2},
+    {id:"t3",name:"组装手电",ingredients:{nail:1,battery:2,wire:1},result:"flashlight",qty:1},
+    // 武器类
+    {id:"t4",name:"削尖木棍",ingredients:{nail:2,wood:1},result:"sharp_stick",qty:1},
+    {id:"t5",name:"自制菜刀",ingredients:{nail:3,wood:1,metal_plate:1},result:"kitchen_knife",qty:1},
+    {id:"t6",name:"打造钢管",ingredients:{nail:2,metal_plate:2},result:"iron_pipe",qty:1},
+    {id:"t7",name:"做锤子",ingredients:{nail:2,wood:1,metal_plate:1},result:"hammer",qty:1},
+    {id:"t8",name:"做雨伞",ingredients:{cloth:2,wood:1,tape:1},result:"umbrella",qty:1},
+    {id:"t9",name:"做马桶塞",ingredients:{wood:1,tape:1},result:"plunger",qty:1},
+    // 空间类
+    {id:"t10",name:"做布袋",ingredients:{cloth:1,tape:1},result:"cloth_bag",qty:1},
+    {id:"t11",name:"做书包",ingredients:{cloth:2,tape:1},result:"backpack",qty:1},
+    {id:"t12",name:"做篮子",ingredients:{cloth:1,wood:1},result:"basket",qty:1},
+    {id:"t13",name:"做行李箱",ingredients:{cloth:1,metal_plate:2},result:"suitcase",qty:1}
+];
+const RECIPES = RECIPE_POOL.filter(r=>{try{return ITEMS[r.result] && Object.keys(r.ingredients).every(k=>ITEMS[k])}catch(e){return false}});
+
+// ======= 状态 =======
+const defaultState = {
+    day:1,timeIdx:0,hunger:100,sanity:100,health:100,gold:500,
+    inventory:{},carried:{food1:null,food2:null,weapon:null,tool:null},
+    mealFood:null,mealWater:null,mealMed:null,noFoodDays:0,noBuildDays:0,noOutDays:0,friendName:"好友",
+    roomOrder:[],roomEntered:0,priceMult:1.0,lastAction:null,
+    shopItems:[],shopPurchased:[],gameLocked:false,dailyRecipes:null,
+    dailyLog:[],rescueShown:false,lockedRoomOpened:false,
+    clues:[],
+    enteredRoomIndices:[],
+    // 逃串商人每日状态
+    merchantSellUsed:null,    // 今日卖了哪个物资给商人（或 null）
+    merchantFood1:null,       // 今日商人卖的食物1 key
+    merchantFood2:null,       // 今日商人卖的食物2 key
+    merchantBought:[]         // 今日已买的食物 key 列表
+};
+let state = loadState();
+const SAVE_KEY = "doomsday_v3_state";
+
+function saveState(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(state))}catch(e){}}
+function loadState(){try{const r=localStorage.getItem(SAVE_KEY);if(r)return JSON.parse(r)}catch(e){}return null}
+function rand(a,b){return Math.floor(Math.random()*(b-a+1))+a}
+function randomPick(a){return a[Math.floor(Math.random()*a.length)]}
+function clamp(v,min=0,max=100){return Math.max(min,Math.min(max,v))}
+function weightedPick(p){const t=p.reduce((s,x)=>s+x.weight,0);let r=Math.random()*t;for(const x of p){r-=x.weight;if(r<=0)return x.key}return p[0].key}
+
+function addItem(k,q=1){state.inventory[k]=(state.inventory[k]||0)+q}
+function removeItem(k,q=1){if(!state.inventory[k])return false;state.inventory[k]-=q;if(state.inventory[k]<=0)delete state.inventory[k];return true}
+function getCarriedArray(){return [state.carried.food1,state.carried.food2,state.carried.weapon,state.carried.tool].filter(x=>x!==null)}
+function hasLighting(){return getCarriedArray().some(k=>k==='flashlight'||k==='lighter'||k==='candle')}
+function applyDelta(d){if(d.hunger!==undefined)state.hunger=clamp(state.hunger+d.hunger);if(d.sanity!==undefined)state.sanity=clamp(state.sanity+d.sanity);if(d.health!==undefined)state.health=clamp(state.health+d.health);if(d.gold!==undefined)state.gold=Math.max(0,state.gold+d.gold)}
+
+// ======= 打字机 =======
+function typewriter(el,text,speed=25){el.textContent="";let i=0;if(el._t)clearInterval(el._t);el._t=setInterval(()=>{if(i<text.length){el.textContent+=text.charAt(i);i++}else{clearInterval(el._t);el._t=null}},speed)}
+
+// ======= 弹窗 =======
+const modalEl=document.getElementById('modal');
+function openModal(title,body,actions){
+    document.getElementById('modal-title').textContent=title;
+    document.getElementById('modal-body').textContent=body;
+    const act=document.getElementById('modal-actions');act.innerHTML="";
+    actions.forEach(a=>{const b=document.createElement('button');b.className='wide-btn '+(a.cls||'');b.textContent=a.label;b.onclick=()=>{closeModal();if(a.onClick)a.onClick()};act.appendChild(b)});
+    modalEl.classList.add('show');
+}
+function openModalRaw(title,bodyHTML,onOpen){
+    document.getElementById('modal-title').textContent=title;
+    document.getElementById('modal-body').innerHTML=bodyHTML;
+    document.getElementById('modal-actions').innerHTML="";
+    modalEl.classList.add('show');
+    if(onOpen)onOpen();
+}
+function closeModal(){modalEl.classList.remove('show')}
+// 遮罩层点击不关闭，所有弹窗必须通过按钮显式关闭（防止地点选择弹窗被误关后游戏页卡死）
+
+// ======= 日志 & 合成表 =======
+function logEvent(text,deltaObj=null,itemsArr=null){
+    // 自动去除文字中的句号、感叹号、问号（今日经历设计要求）
+    text=text.replace(/[。！？]/g,'');
+    state.dailyLog=state.dailyLog||[];
+    const entry={time:TIME_SLOTS[state.timeIdx],text};
+    if(deltaObj){
+        const d=[];
+        if(deltaObj.hunger!==0&&deltaObj.hunger!==undefined)d.push(`饱腹${deltaObj.hunger>0?'+':''}${deltaObj.hunger}`);
+        if(deltaObj.sanity!==0&&deltaObj.sanity!==undefined)d.push(`理智${deltaObj.sanity>0?'+':''}${deltaObj.sanity}`);
+        if(deltaObj.health!==0&&deltaObj.health!==undefined)d.push(`健康${deltaObj.health>0?'+':''}${deltaObj.health}`);
+        if(deltaObj.gold!==0&&deltaObj.gold!==undefined)d.push(`金币${deltaObj.gold>0?'+':''}${deltaObj.gold}`);
+        entry.deltas=d.join(' / ');
+    }
+    if(itemsArr&&itemsArr.length){
+        entry.items=itemsArr.map(k=>ITEMS[k]?`${ITEMS[k].icon}${ITEMS[k].name}`:k).join(' + ');
+    }
+    state.dailyLog.push(entry);saveState();
+}
+function showDailyLog(){
+    state.dailyLog=state.dailyLog||[];
+    // === 3 条状态逻辑（从 generateStory 移过来）===
+    let what="";
+    const logs=state.dailyLog;
+    const last=logs.length>0?logs[logs.length-1]:null;
+    if(last){
+        const t=last.text;
+        if(t.includes("零 件 合 成"))what="刚刚做出了物资 ×3";
+        else if(t.includes("今 日 食 物"))what="刚刚在家吃过东西了";
+        else if(t.includes("今 日 饮 水"))what="刚刚在家喝过水了";
+        else if(t.includes("今 日 药 品"))what="刚刚在家用了药品 / 娱乐";
+        else if(t.includes("街 头 冒 险 死 亡"))what="";
+        else if(t.includes("街 头 冒 险"))what="刚刚回到家，今天街头很危险";
+        else if(t.includes("遇 到 邻 居")||t.includes("打 开 上 锁 房 间")||t.includes("卖 给 收 购 商")||t.includes("用 线 索")||t.includes("用 食 物 换")||t.includes("商 店 购 买"))what="刚刚到大楼探索了";
+        else if(t.includes("RPS"))what="刚刚在游戏机那赌了一把";
+        else if(t.includes("邻 居 赠 送")||t.includes("赠 送 食 物"))what="刚刚和邻居聊了聊";
+        else what="刚刚做了些事情";
+    }else{
+        if(state.day<=1)what="心里有些不安，想给自己找点事情做";
+        else if(state.lastAction==="home")what="刚刚去过家里仓库";
+        else if(state.lastAction==="out")what="刚刚出门回来";
+        else what="心里有些不安，想给自己找点事情做";
+    }
+    let belly="";
+    if(state.hunger>=80)belly="肚子：还不饿，还能撑一撑。";
+    else if(state.hunger>=60)belly="肚子：有点饿了，该吃点东西保持体力。";
+    else if(state.hunger>=30)belly="肚子：不行了，真得找东西吃了。";
+    else belly="肚子：饿！要饿死了！";
+    let sanity="";
+    if(state.sanity>=80)sanity="想法：小小风波，还搞得定！";
+    else if(state.sanity>=60)sanity="想法：真的假的，只是搞心态吧？";
+    else if(state.sanity>=40)sanity="想法：不会吧，有点吓人了。";
+    else if(state.sanity>=20)sanity="想法：妈！救命！";
+    else sanity="想法：哈哈哈，来啊！谁怕谁！";
+    const statusBlock="【当 前 状 态】\n— "+what+"。\n— "+belly+"\n— "+sanity+"\n\n";
+    // === 原来的日志 ===
+    if(state.dailyLog.length===0){
+        openModal("—— 今 日 经 历 ——",statusBlock+"今 天 还 没 有 任 何 经 历。",[{label:"放 下 日 记 本"}]);return;
+    }
+    const lines=state.dailyLog.map(e=>{
+        let s=`【${e.time}】${e.text}`;
+        if(e.deltas)s+=`\n→ ${e.deltas}`;
+        if(e.items)s+=`\n→ 获得: ${e.items}`;
+        return s;
+    }).join('\n\n');
+    openModalRaw("—— 今 日 经 历 ——",statusBlock+lines,()=>{
+        document.getElementById('modal-body').style.whiteSpace='pre-wrap';
+        const act=document.getElementById('modal-actions');act.innerHTML="";
+        const btn=document.createElement('button');
+        btn.className='wide-btn';btn.textContent='放 下 日 记 本';
+        btn.onclick=()=>closeModal();act.appendChild(btn);
+    });
+}
+function showAllRecipesTable(){
+    const groups={food_ready:"🍖 食 物",water_ready:"💧 水",medical:"💊 医 疗",entertainment:"🎮 娱 乐",tool:"🛠️ 工 具",weapon:"🔫 武 器",space:"📦 空 间"};
+    const byG={};
+    RECIPES.forEach(r=>{const g=ITEMS[r.result].type;if(!byG[g])byG[g]=[];byG[g].push(r)});
+    openModalRaw("—— 合 成 表 ——","点 击 查 看",()=>{
+        const body=document.getElementById('modal-body');
+        body.style.background='#111';body.style.color='#eee';body.style.padding='14px';body.style.lineHeight='1.8';
+        Object.keys(groups).forEach(g=>{
+            const items=byG[g]||[];if(items.length===0)return;
+            const title=document.createElement('div');
+            title.textContent=groups[g]+"（"+items.length+"）";
+            title.style.cssText='font-size:13px;color:#ccc;padding:8px 10px;background:#1a1a1a;margin-top:10px;border-left:3px solid #555;cursor:pointer;letter-spacing:2px;user-select:none;font-family:inherit;box-shadow:inset 0 -1px 0 #222';
+            const detail=document.createElement('div');detail.style.cssText='display:none;padding:4px 10px;font-size:12px;color:#bbb';
+            items.forEach(r=>{
+                const ingStr=Object.entries(r.ingredients).map(([k,v])=>`${ITEMS[k].icon}${ITEMS[k].name}×${v}`).join(' + ');
+                const res=ITEMS[r.result];
+                const row=document.createElement('div');row.style.cssText='margin:6px 0;padding:6px 0;border-bottom:1px dashed #333;line-height:1.7';
+                row.innerHTML=`<div style="color:#fff;font-size:12px;margin-bottom:3px">${r.name}</div><div style="color:#aaa;font-size:11px">${ingStr} → ${res.icon}${res.name} ×${r.qty}</div>`;
+                detail.appendChild(row);
+            });
+            title.onclick=()=>{detail.style.display=detail.style.display==='none'?'':'none'};
+            body.appendChild(title);body.appendChild(detail);
+        });
+        // 底部按钮
+        const act=document.getElementById('modal-actions');act.innerHTML="";
+        const btn=document.createElement('button');
+        btn.className='wide-btn ghost';btn.textContent='回 到 工 具 台';
+        btn.onclick=()=>{closeModal();renderCraftPage()};
+        act.appendChild(btn);
+    });
+}
+
+// ======= 新游戏 =======
+function newGame(){
+    state=JSON.parse(JSON.stringify(defaultState));
+    state.inventory=initialInventory();
+    state.roomOrder=shuffleRooms();
+    state.priceMult=1.0+Math.random()*0.3;
+    state.shopItems=generateShopItems();
+    // 重置所有模块级时间相关变量
+    roomsTimeAdvanced=0;enteredTimeIdx=-1;returnHomeShownToday=false;skipAuto21Dark=false;
+    saveState();
+}
+function initialInventory(){
+    const inv={};
+    // 从 LOOT_POOL 随机选 9 个唯一物品，数量各 1
+    const used=new Set();
+    let count=0;
+    while(count<9){
+        const k=weightedPick(LOOT_POOL);
+        if(!used.has(k)){used.add(k);inv[k]=1;count++}
+    }
+    return inv;
+}
+function shuffleRooms(arr){const a=arr?arr.slice():['rps','stranger','monster','friend'];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function generateDailyRecipes(){
+    // 按 result 物品类型分组：food_ready=食物成品, water_ready=水成品, 其他=工具/医疗/娱乐/武器
+    const byType={food:[], water:[], other:[]};
+    RECIPES.forEach(r=>{
+        const t=ITEMS[r.result].type;
+        if(t==='food_ready')byType.food.push(r);
+        else if(t==='water_ready')byType.water.push(r);
+        else byType.other.push(r);
+    });
+    // 抽 2 食物 + 1 水 + 5 其他 = 8
+    const pick=(arr,n)=>{const a=arr.slice();const r=[];for(let i=0;i<n&&a.length;i++){const idx=Math.floor(Math.random()*a.length);r.push(a.splice(idx,1)[0])}return r};
+    return [...pick(byType.food,2),...pick(byType.water,1),...pick(byType.other,5)];
+}
+function generateShopItems(){
+    const pool=Object.keys(ITEMS).filter(k=>ITEMS[k].type!=='part');const picked=[];
+    while(picked.length<3&&pool.length>0){const i=Math.floor(Math.random()*pool.length);picked.push(pool.splice(i,1)[0])}
+    return picked;
+}
+
+// ======= 页面切换 =======
+function switchPage(id){
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo(0,0);
+    switchBgm(id);  // 自动切换背景音乐
+}
+
+// ======= 故事池（必须在 generateStory 之前定义）=======
+const DARK_STORIES=[
+    "突然被楼下的嚎叫声吓到。\n声音不像人。\n也不像任何动物。\n你被吓得浑身发抖。",
+    "似乎有人在敲门。\n节奏很慢，一下，一下，又一下。\n你蹲在柜子后。\n直到声音停下来。",
+    "听见窗外有指甲刮玻璃的声音。\n你躲在门后闭着眼假装没听见。\n刮了很久才消失。",
+    "一阵沉闷的撞击声在黑夜里传来。\n像是有什么东西在用头撞楼下的铁门。\n那声音持续了整整两个小时。\n然后突然停了。",
+    "经过窗边时看见楼下路灯旁站着一个影子。\n一动不动地仰头看着你这栋楼。\n你关掉手电筒。\n缩回阴影里。\n一整夜没再合眼。",
+    "楼道里传来湿漉漉的拖拽声。\n你数着楼层。\n想象那个东西正在某个门口徘徊。",
+    "你抬头看见天花板上有一小块水渍在慢慢扩大。\n不知道楼上发生了什么。",
+    "隔壁房间突然传来电视的声音。\n断断续续的，像信号不好的老频道。\n那里你三天前才去过一趟。",
+    "一阵急促的敲门声惊醒正在附近探索的你。\n熟悉的声音正在楼道里响起：\n「开开门，求你了。」\n你站在门后，一个字也没敢回。",
+    "对面的楼里有几扇窗户亮起了微弱的光。\n又很快灭了。\n不知道是蜡烛还是手机屏幕。\n也不知道那些窗户后面还有没有人。",
+    "楼下传来玻璃碎裂的声音。\n然后是沉重的脚步声走进大厅。\n你趴在窗边往下看。\n黑暗中有什么东西在翻找什么。",
+    "一阵咀嚼声。\n声音很近，像是从门外传来的。\n你贴着门缝往外看。\n楼道里漆黑一片，什么也看不见。\n但咀嚼声一直没停。",
+    "不经意间对上了窗户。\n楼下的阴影里有一双眼睛在反光。\n像两颗浑浊的玻璃珠。",
+    "楼梯间传来跑步声。\n很快，不像丧尸那种拖沓的步伐。\n声音从一楼一路跑到顶楼。\n然后消失了。",
+    "这里似乎还有别人在。\n整栋楼陆续响起了敲门声。\n每一扇门，像某种仪式。",
+    "一阵婴儿的哭声从楼下传来。\n你趴在窗边听了很久。\n那哭声越来越像一种模仿。\n越来越不像真的。",
+    "天花板上传来弹珠落地的声音。\n一颗，两颗，三颗……\n然后是一阵缓慢的拖拽声。\n从这头拖到那头。",
+    "楼道里的声控灯突然亮了。\n你透过门缝看出去。\n灯下一只丧尸正背对着你，\n头以不自然的角度歪向一侧，像是在听什么。\n灯灭了，它也消失了。",
+    "低沉的嗡鸣声像很多只苍蝇聚在一起。\n声音从墙壁里传来。\n你把手贴在墙面上。\n感觉到微弱的震动。",
+    "楼下传来收音机的声音。\n放着一首老歌。\n那声音在空旷的夜里显得格外清晰。\n像另一个世界的广播。",
+    "你蹲在门口一动不动地盯着门缝。\n门缝下面慢慢渗进来一摊暗色的液体。",
+    "窗外传来翅膀拍打的声音。\n有什么东西落在了阳台上。\n你透过窗帘的缝隙看出去，\n一只乌鸦蹲在栏杆上，嘴里叼着什么东西。\n歪着头看你。",
+    "一声巨响。\n像是楼下有什么东西从高处坠落。\n之后是漫长的寂静。\n然后从黑暗中传来一阵缓慢的、湿黏的爬行声。",
+    "有人在楼道里唱歌。\n调子断断续续的，像一首童谣。\n声音越来越近，停在门口。\n然后变成了一声低吼。",
+    "头顶传来指甲划过水泥的声音。\n一下，又一下，像在数日子。",
+    "楼道里响起了脚步声。\n很多人，很整齐，像列队行进。\n脚步声从一楼走到三楼。",
+    "一阵腐臭的气味从房间里传出。\n味道比前几天浓烈了十倍。",
+    "窗外好像有人在叫你的名字。\n声音很轻，像耳语。\n你没有凑过去看。",
+    "今夜的楼道里很安静。\n所有声音都消失了。\n那种绝对的寂静比任何声音都可怕。",
+    "窗外没有嚎叫。\n楼道里没有脚步声。\n整个世界像屏住了呼吸。\n更加让人心跳加快了。",
+];
+// 21:00 睡眠提醒故事池（20篇）
+const SCARED_REST_STORIES=[
+    "你把桌子重新推回原位。\n然后靠着门板坐在地上。\n连灯都没开。",
+    "楼道里安静下来了。\n你把今天捡到的东西摊在地板上看了最后一遍。\n然后一件件收进包里。",
+    "外面的世界明天再说。\n今晚先到这里。",
+    "你用湿毛巾重新堵好门缝。\n躺下的时候听见远处传来一声嚎叫。\n但身体已经累得不想再害怕了。",
+    "今天走了很远的路，鞋底磨穿了一个洞。\n你把鞋脱在门口，光脚踩在地板上。\n凉意让你一下子就困了。",
+    "你把收音机的音量拧到最小。\n贴在耳边听了一会儿白噪音。\n像听一首没有旋律的摇篮曲。",
+    "窗外的黑暗里什么也看不见。\n你把窗帘拉严实，缩进被子里。\n假装自己只是在一个普通的夜晚入睡。",
+    "手臂上白天被划的口子还在隐隐作痛。\n你给它缠上最后一截纱布。\n然后闭上眼。\n疼痛反而变成了一种催眠的节奏。",
+    "你把今天画好的路线图折好塞进日记本里。\n合上本子的那一刻。\n眼皮忽然变得很重。",
+    "楼下传来一阵拖拽声。\n你盯着天花板听了一会儿。\n声音渐渐远了。\n你翻了个身，把脸埋进枕头里。",
+    "猫今天一直蹲在你枕头旁边。\n你伸手摸了摸它的背。\n它发出细细的呼噜声。\n那声音比任何安眠药都管用。",
+    "你把水壶放在床头。\n把菜刀放在枕头底下。\n做完这些仪式般的动作之后。\n才允许自己闭上眼睛。",
+    "今天差点没回来。\n躺在床上回想白天的每一个瞬间。\n想着想着。\n那些画面就模糊成了一片黑暗。",
+    "你数了数剩下的食物。\n数完之后反而安心了。\n知道自己明天还不会饿死。",
+    "阳台的葱又长高了一点。\n你睡前最后看了一眼那抹绿色。\n像看一盏快要熄灭但还没灭的灯。",
+    "隔壁传来一阵沉闷的撞击声。\n你等了很久，声音没有继续。\n你把被子蒙过头顶。\n强迫自己不再去听。",
+    "你把白天沾满灰尘的外套脱在门口。\n钻进被窝。\n皮肤接触到干净的床单。\n像回到了另一个世界。",
+    "收音机里最后一点声音也消失了。\n房间里只剩下你和猫的呼吸声。\n一重一轻，交替着。\n像某种古老的钟摆。",
+    "你把手电筒放在枕头边，开关朝上。\n万一半夜醒来能一秒摸到。\n这个小小的动作让你觉得一切还在掌控之中。",
+    "今天什么都没找到。\n空着手回来的。\n你躺在床上盯着天花板。\n忽然觉得，能空着手回来。\n本身就已经是一件幸运的事了。",
+];
+// 上锁房间关闭后 → 疲惫/想念故事池（10篇）
+const TIRED_REST_STORIES=[
+    "疲 惫 了 一 天，\n抱 着 那 件 东 西 就 睡 着 了。\n梦 里 还 有 很 轻 的 声 音。",
+    "这 一 天 真 的 太 累 了。\n什 么 都 没 想，\n倒 下 就 睡。\n是 今 天 睡 得 最 熟 的 一 晚。",
+    "终 于 到 晚 上 了。\n你 把 那 件 东 西 放 好，\n躺 下。\n很 快 就 睡 着 了。",
+    "你 想 起 了 那 串 脚 印。\n想 起 了 那 扇 门。\n想 起 了 很 多 事。\n很 快 就 累 得 睡 着 了。",
+    "这 一 天，\n该 看 的 看 了，\n该 做 的 做 了。\n躺 下，\n终 于 能 休 息。",
+    "你 把 篮 子 里 的 东 西 拿 出 来，\n放 在 床 边。\n躺 下，\n很 快 就 什 么 都 不 知 道 了。",
+    "很 累，\n但 心 里 有 一 种 奇 怪 的 平 静。\n也 许 是 终 于 知 道 了\n那 扇 门 后 面 的 东 西。",
+    "你 没 有 再 想 很 多。\n把 门 关 好，\n躺 下。\n这 一 天 真 的 太 累 了。",
+    "今 晚 很 安 静。\n你 躺 在 床 上，\n听 着 外 面 的 声 音 渐 渐 小 下 来。\n终 于，\n睡 着 了。",
+    "你 想 起 了 很 久 以 前 的 事。\n那 时 候 还 没 有 丧 尸。\n想 着 想 着，\n就 睡 着 了。\n是 安 稳 的 一 晚。"
+];
+
+// 好友赠送礼物小故事（10篇，{物 资} 由代码替换）
+const FRIEND_STORIES=[
+    "朋友 把一个用报纸包着的 物资 塞到你手里。\n「超市后门捡的。」\n「货架倒了，东西散了一地，我趁没人拿了一个。」\n没等你道谢， 朋友 已经转身走了。",
+    "朋友 手里攥着那个 物资 。\n胳膊上有一道新划的口子。\n「那家便利店开着。」\n「里面没人了。」\n朋友 不愿意多说，你也没问。",
+    "朋友 的眼睛亮亮的。\n「大街上有辆车，后备箱里翻到的。」\n朋友 把 物资 递给你。\n「车主大概走得很急，什么都没来得及拿。」",
+    "朋友 的声音压得很低。\n「银行那边有人扔东西出来。」\n「我跑下去捡的，不知道是什么，但感觉你用得上。」\n朋友 把 物资 放在你手里就走了。\n像完成了一个秘密任务。",
+    "朋友 的衣服湿透了，头发贴在额头上。\n「下雨了，我路过那间小诊所。」\n「有个房间门开着，里面有些东西，我挑了 物资 给你。」",
+    "朋友 把 物资 放在地上。\n「昨天在便利店门外的长椅下面发现的。」\n「不知道谁放在那的，但看起来没人要了。」",
+    "朋友 手里拿着 物资。\n「有人在天台上留了个箱子。」\n「里面乱七八糟的，我翻了半天，这个最适合你。」\n朋友 的指甲缝里全是灰。",
+    "朋友 将 物资 递给你的时候，手在发抖。\n「超市门没锁，里面很乱，像被翻过。」\n「我在角落里找到这个，赶紧就回来了。」",
+    "朋友 的裤腿上沾着泥。\n「五金店那边有个垃圾堆。」\n「我翻了翻，有些东西还能用。」\n朋友 把 物资 递给你，笑了笑。\n「别嫌弃。」",
+    "朋友 的手里紧紧攥着 物资。\n「在火车站那边走了很远。」\n「路上差点回不来。」\n朋友 把东西放在你手里，手指冰凉。\n你问 朋友 值不值得，\n「你收着就行。」",
+];
+
+// 好友索求食物 → 赠送物资 故事（4条）
+const FRIEND_ASK_STORIES=[
+    "朋友 笑 笑，拿 出 了 物资。\n「我 只 有 这 个 了。」\n「你 拿 去 吧。」\n\n朋友 把 物资 递 给 了 你。",
+    "「我 刚 刚 在 路 上 捡 的。」\n「不 知 道 谁 掉 那 了。」\n「运 气 真 好。」\n「送 给 你」\n\n朋友 把 物资 递 给 了 你。",
+    "「还 好 住 在 你 附 近。」\n「不 然 连 口 饭 都 吃 不 上 了。」\n\n朋友 把 物资 递 给 了 你。",
+    "朋友 眼 睛 红 红。\n「你 说。」\n「他 们 都 好 好 的 吗？」\n朋友 握 着 你 的 手。\n「我 们 一 定 要 活 下 去。」\n\n朋友 把 物资 递 给 了 你。"
+];
+
+// 好奇邻居线索（15条）
+const CURIOUS_CLUES=[
+    "北 区 水 厂 还 没 被 攻 破，每 天 凌 晨 四 点 有 人 去 取 水。",
+    "东 边 高 架 桥 塌 了，但 桥 下 的 涵 洞 还 能 走 人。",
+    "它 们 白 天 行 动 迟 缓，日 落 之 后 会 变 得 异 常 活 跃。",
+    "地 下 车 库 B2 层 藏 着 一 批 医 疗 物 资，入 口 被 面 包 车 堵 着。",
+    "南 边 超 市 的 仓 库 门 从 里 面 锁 了，但 通 风 管 道 能 钻 进 去。",
+    "第 三 医 院 还 有 发 电 机 在 运 转，三 楼 药 房 可 能 有 抗 生 素。",
+    "西 边 围 墙 外 有 一 群 幸 存 者，每 隔 三 天 会 放 一 次 烟 火 信 号。",
+    "它 们 对 声 音 极 其 敏 感，但 对 光 线 几 乎 没 有 反 应。",
+    "被 咬 之 后 最 快 两 小 时 变 异，慢 的 话 能 撑 三 天。",
+    "老 城 区 地 下 防 空 洞 的 入 口 在 菜 市 场 后 面，铁 门 没 锁。",
+    "它 们 会 被 腐 肉 的 气 味 吸 引，可 以 用 这 个 引 开 它 们。",
+    "自 来 水 系 统 还 没 完 全 断，高 层 偶 尔 会 来 水，记 得 提 前 蓄 水。",
+    "第 七 天 之 后 它 们 会 开 始 腐 烂，行 动 力 大 幅 下 降。",
+    "有 人 在 电 台 频 率 98.5 上 定 时 广 播，每 天 中 午 十 二 点。",
+    "不 要 相 信 敲 门 求 救 的 声 音，它 们 已 经 学 会 模 仿 人 了。"
+];
+
+const DAILY_STORIES=[
+    "窗外是灰色的天。\n你还记得三天前电视里最后播的那条紧急新闻——「不明病毒已扩散至全市。」\n手机信号已经断了。\n你还有一些食物，和一点希望。",
+    "楼下的尖叫声把你从午睡中惊醒。\n你趴在窗边往下看。\n一个穿西装的男人正在追咬一个外卖员。\n你慢慢蹲下来。\n把窗帘拉上了。",
+    "手机信号断了。\n你举着手机在屋里走来走去，像举着一根求救的火把。\n最后把手机放在窗台上，屏幕朝外。\n万一有人路过能看见亮光。",
+    "你把家里所有的锁检查了三遍。\n又把桌子推到门后。\n你坐在衣柜旁边卷缩。\n觉得那张重重的桌子给了你一种虚假的安全感。",
+    "隔壁传来敲门声。\n是熟悉的声音：「你好，有人吗，你家还有盐吗？。」\n你攥着简略的防身工具站在门后，一个字也没敢回。\n门外安静了很久。\n脚步声才慢慢远去。",
+    "你开始跟家里的猫说话。\n它歪着头看你，眼神像在看一个陌生人。\n你忽然意识到。\n也许在它眼里，你已经不是那个每天按时上班的人了。",
+    "停水了。\n你把浴缸蓄满最后一点浑浊的自来水，用保鲜膜封住。看着那层薄薄的水面。\n像看着一面即将碎裂的镜子。",
+    "你在阳台种了三颗葱。\n不是因为饿。\n是因为你需要看见什么东西活着、在生长。\n每天浇水的时候。\n你会对它说\"加油\"，像在给自己打气。",
+    "夜里听见楼道里有拖拽的声音，很重，很慢。\n你数着它经过你家门口的步数——十七步。\n然后声音消失了。\n你一整夜没有闭眼。",
+    "你翻出一本日记本，决定每天写点什么。\n第一页写的是：\n「如果有人找到这本日记，说明你已经不在了。」\n写完觉得太丧，又划掉了。",
+    "家里的东西快吃完了。\n你开始认真计算每一口食物的热量，像在做一道生存数学题。\n最后一块巧克力，你舍不得吃。\n放在最里面。",
+    "对面楼的一扇窗户亮着烛光。\n有人在里面挥手。\n你犹豫了很久，也举起手挥了挥。\n那束烛光像一根细线，把你和人类世界连在一起。",
+    "今天对面楼的烛光灭了。\n第二天也没再亮起来。\n你站在窗前看了很久那扇黑洞洞的窗户。\n第一次感到一种比恐惧更深的东西——孤独。",
+    "你开始做俯卧撑，每天五十个。\n肌肉酸痛的时候，你反而觉得安心。\n至少身体还在告诉你：\n你还活着，你还有力气。",
+    "半个月了。\n你对着镜子看了很久。\n镜子里是一个满脸蜡黄、眼窝深陷的人。\n愣了很久。\n你冲镜子笑了一下，镜子里的人也笑了。\n但都不太像真的。",
+    "阳台的葱长高了一截，绿油油的。\n你小心地摘了一根，切碎。\n在嘴里轻嚼。\n那根葱是你这辈子吃过最好吃的。",
+    "收音机里忽然传出声音。\n断断续续的：「…北区避难所…仍在运作…」\n你激动得手都在抖。\n但信号很快又断了。\n你把频率记在墙上，每天调一次。",
+    "你开始画地图。\n从你家到北区避难所，直线距离大概四公里。\n你用铅笔标出路线。\n标完又觉得。\n四公里在这个世界里，像四万公里一样远。",
+    "猫今天跳上了你的膝盖，主动蹭了蹭你的手。\n你摸着它的毛，眼泪突然就掉下来了。\n不是因为害怕。\n是因为终于有什么东西愿意靠近你。",
+    "楼下的丧尸似乎变少了。\n也许它们走远了，也许腐烂让它们动不了了。\n世界变得异常安静。\n安静到你能听见自己的心跳。",
+    "你把家里能找到的所有武器摆在床上。\n看起来寒酸得可笑。\n但摆完之后。\n你第一次觉得自己有了出发的底气。",
+    "收音机又响了。\n这次清楚了一些：「...北区避难所，每天中午十二点开放入口...」\n你看了看墙上的钟。\n你还有时间准备。",
+    "你把猫粮倒了一半在阳台。\n另一半装进背包。\n猫看着你收拾东西，安静地蹲在门口。\n你不知道该不该带它走。\n路上太危险了。",
+    "晚上你失眠了。\n脑子里反复排练出门后的每一步：\n开门、下楼、左转、沿墙走、不过马路。\n像背台词一样，背到天亮。",
+    "你把日记本放在桌上。\n翻到最后一页写：\n你决定出发。如果这本日记被找到。\n请告诉你的家人。\n你会努力活下去。",
+    "你把菜刀从门后取下来。\n在手里掂了掂，又放了回去。\n出门的念头在脑子里转了一整夜。\n但天亮之后，你还是把桌子重新推回了门边。",
+    "收音机彻底没声了。\n你反复拧着旋钮，从这头转到那头。\n只有沙沙的白噪音。\n你把收音机放在桌上。\n像盯着一扇再也不会打开的窗户。",
+    "今天把最后一点食物吃了。\n很稀，稀到能照见碗底。\n你慢慢吃完，把碗舔干净。\n厨房变得空荡荡的，像这间屋子一样。",
+    "下午阳台的葱被风吹折了。\n你蹲在那里看了半天。\n忽然觉得眼眶发酸。\n不是因为饿，是因为连最后一点绿色的东西也没了。",
+    "一个月了。\n你把日记本翻到新的一页，\n写下：「第30天，你还活着。」\n然后合上本子。",
+];
+
+const RESCUE_STORIES=[
+    "你 疯 狂 地 跑 上 天 台。\n天 台 门 后 面 站 着 三 个 人，\n穿 着 破 烂 的 军 服。\n他 们 看 着 你，\n嘴 角 慢 慢 地 咧 开。\n牙 齿 是 黑 的。\n他 们 也 不 是 来 救 你 的。",
+    "下 楼 的 时 候 你 碰 到 了 阿 明。\n他 是 你 大 学 最 好 的 朋 友。\n「走，我 认 识 一 条 安 全 的 路。」\n你 信 了。\n但 他 走 路 的 姿 势 不 对，\n一 瘸 一 拐 的，\n而 且 他 从 来 不 回 头 看 你。\n等 他 终 于 转 过 头 来——\n半 张 脸 已 经 没 有 了。",
+    "你 跑 上 天 台，\n风 很 大，\n却 什 么 也 没 有。\n没 有 直 升 机，\n没 有 人，\n连 广 播 都 停 了。\n你 突 然 醒 过 来——\n自 己 还 躺 在 家 的 床 上，\n天 还 没 亮。\n窗 外 还 是 那 片 灰 色 的 天。",
+    "直 升 机 的 声 音 越 来 越 近。\n你 疯 狂 地 挥 手。\n但 天 台 的 铁 门 被 卡 死 了。\n你 用 尽 全 力 砸，\n砸 到 手 指 都 流 血。\n门 还 是 没 开。\n直 升 机 的 声 音——\n渐 渐 远 去 了。",
+    "直 升 机 真 的 来 了！\n你 赶 紧 跑 上 去。\n但 机 长 看 了 看 你，\n摇 摇 头：\n「身 上 有 伤 口 的，不 能 带 。」\n你 低 头 看 到 自 己 胳 膊 上，\n前 几 天 被 抓 伤 的 那 道 痕 迹。\n直 升 机 起 飞 了，\n越 来 越 小。",
+    "救 援 队 到 了——\n但 他 们 不 是 来 救 所 有 人 的。\n「排 队，做 血 检。」\n你 看 到 前 面 有 好 几 个 人 因 为 体 温 偏 高，\n被 拖 进 了 另 一 间 屋 子。\n屋 子 里 传 出 了 枪 声。",
+    "你 跑 上 天 台，\n看 到 了 小 雪——\n你 家 对 面 那 个 平 时 一 起 买菜 的 女 孩。\n她 也 赶 来 了。\n「来，搭 档 一 起 上！」\n你 们 挤 上 直 升 机。\n但 直 升 机 起 飞 后，\n你 回 头 看——\n小 雪 对 你 笑，\n眼 睛 里 面 全 是 黑 的。",
+    "你 终 于 到 了 集 中 营。\n外 面 有 围 墙，\n有 士 兵，\n有 医 生。\n但 你 听 到 隔 壁 帐 篷 里，\n有 人 在 低 低 地 哭。\n你 走 过 去，\n看 到 了 墙 上 贴 的 公 告——\n这 里 的 「 安 全 区 」，\n也 只 是 另 一 个 囚 笼。",
+    "你 在 直 升 机 上 看 到 了 一 个 标 志。\n那 是 你 公 司 的 logo。\n你 认 得——\n生 化 病 毒 爆 发 前，\n你 公 司 正 在 研 究 一 种 「 特 效 药 」。\n这 支 救 援 队——\n就 是 他 们 派 来 的。\n你 突 然 明 白 了 什 么。",
+    "你 醒 来 的 时 候，\n发 现 自 己 躺 在 一 张 病 床 上。\n身 上 插 满 了 管 子。\n旁 边 的 仪 器 滴 滴 滴 地 响。\n你 看 到 窗 外，\n天 空 很 蓝，\n有 鸟 在 飞。\n护 士 进 来 了：\n「 你 好，你 昏 迷 三 十 天 了。 今 天 是 正 常 的 世 界。」\n你 张 了 张 嘴，\n没 有 说 话。\n因 为 你 还 记 得——\n那 三 十 天 里 的 每 一 个 夜 晚。"
+];
+
+// ======= 故事 =======
+function generateStory(){
+    const idx=(state.day-1)%DAILY_STORIES.length;
+    return DAILY_STORIES[idx];
+}
+function showDarkStory(theme){
+    const story=randomPick(DARK_STORIES);
+    openModal("—— 黑 夜 ——",story,[{label:"快 点 回 家",cls:"",onClick:()=>{
+        renderMain();switchPage('page-main');
+    }}]);
+}
+function returnHome(msg){state.lastAction="out";state.gameLocked=true;openModal("—— 回家 ——",msg,[{label:"开门",cls:"",onClick:()=>{renderMain();switchPage('page-main')}}])}
+
+// ======= 时间 & 回家提醒 =======
+let returnHomeShownToday=false;
+let skipAuto21Dark = false; // 不回家/上锁房间 等已经自己处理了 21:00，跳过自动黑夜故事
+let enteredTimeIdx = -1;   // 已经处理过的最高 idx，防止 setTimeout 多次弹窗
+let roomsTimeAdvanced = 0; // 已经为多少个大楼房间推进过时间，和 state.enteredRoomIndices 对比
+function advanceTime(n=1){
+    const prevIdx = state.timeIdx;
+    state.timeIdx = Math.min(state.timeIdx+n, TIME_SLOTS.length-1);
+    if(state.timeIdx>=TIME_SLOTS.length-2){state.gameLocked=true}
+    saveState();
+    // 同步触发 checkTimeTriggers：openModal 直接覆盖同一 modal DOM，不会有弹跳
+    // 之前用 setTimeout 会导致 closeModal 和新 openModal 之间出现空白帧
+    checkTimeTriggers(prevIdx);
+}
+function checkTimeTriggers(prevIdx){
+    const idx = state.timeIdx;
+    if(enteredTimeIdx >= idx) return;   // 已经在更早的 setTimeout 里处理过 idx >= 当前值
+    enteredTimeIdx = idx;
+    // openModal 本身会直接覆盖 title/body/actions，不需要先 closeModal 避免闪动
+    if(idx===4 && prevIdx<4){
+        // 恰好抵达 18:00
+        if(!returnHomeShownToday){
+            returnHomeShownToday=true;
+            show18ReturnHome();
+        }
+    } else if(idx>=5 && prevIdx<5){
+        // 到达 21:00 —— 弹黑夜小故事，不弹 21:00 休息提醒弹窗
+        const story=randomPick(DARK_STORIES);
+        openModal("—— 黑 夜 ——",story,[{label:"快 点 回 家",cls:"",onClick:()=>{
+            renderMain();switchPage('page-main');
+        }}]);
+    }
+}
+function show18ReturnHome(){
+    const hasLight=hasLighting();const loss=hasLight?0:-10;
+    const msg2=hasLight?"\n你带了照明，不用怕黑。":"\n今天没有照明，外面很危险。";
+    openModal("18:00 · 天快黑了","外面的光线暗了下来。"+msg2+"\n\n你要回家吗？",[
+        {label:"回家",cls:"",onClick:()=>{returnHome("你不经意间望了眼楼道里的对外窗户。\n外面天色已经开始暗淡。\n马上要天黑了。\n你赶紧加快步伐。")}},
+        {label:hasLight?"留在外面":"不回家（-10 理智）",cls:"danger",onClick:()=>{
+            if(loss!==0){applyDelta({sanity:loss});logEvent("你没有带照明物品，可是还想再看看能否找到些什么。\n路上发生了些事情。\n你被吓到了。",{sanity:-10})}
+            state.lastAction="out";
+            // 推进到 21:00，advanceTime 会自动触发黑夜故事 → 21:00 休息的完整链
+            advanceTime(1);
+        }}
+    ]);
+}
+function showDarkStoryThen21Rest(){
+    // 先弹黑夜小故事，用户点"快回家"后再弹 21:00 休息
+    const story=randomPick(DARK_STORIES);
+    openModal("—— 黑 夜 ——",story,[{label:"快 点 回 家",cls:"",onClick:()=>{
+        renderMain();switchPage('page-main');
+        // 延迟一帧弹 21:00 休息
+        setTimeout(maybeShow21Rest, 300);
+    }}]);
+}
+function maybeShow21Rest(){
+    const restPool=state.sanity<50?SCARED_REST_STORIES:TIRED_REST_STORIES;
+    const restStory=randomPick(restPool);
+    openModal("—— 21:00 · 该 休 息 了 ——",restStory,[
+        {label:"直 接 睡 觉",cls:"",onClick:()=>{closeModal();sleepNewDay()}},
+        {label:"还 不 能 睡",cls:"ghost",onClick:()=>{closeModal();renderMain()}}
+    ]);
+}
+// ======= 背景音乐控制 =======
+// 推荐 Pixabay 免版税音乐（下载后重命名放 HTML 同目录）：
+//   bgm-home.mp      → "Cinematic Dark Ambient"（轻缓悬疑，首页/仓库）
+//   bgm-explore.mp   → "Horror by SigmaMusicArt"（激昂悬疑，大楼/街头）
+const MUSIC_STATE={enabled:false,current:null};
+function initBgm(){
+    const h=document.getElementById('bgm-home');
+    const e=document.getElementById('bgm-explore');
+    if(!h||!e){console.warn('[initBgm] audio elements not found');return;}
+    // 设置 src（用 setAttribute 避免 DOM src property 自动解析成完整 URL 的问题）
+    if(!h.getAttribute('src'))h.setAttribute('src','bgm-home.mp3');
+    if(!e.getAttribute('src'))e.setAttribute('src','bgm-explore.mp3');
+    h.volume=0.4;e.volume=0.4;
+    // 监听音频加载错误
+    h.addEventListener('error',()=>console.warn('[bgm-home] load error, src='+h.src));
+    e.addEventListener('error',()=>console.warn('[bgm-explore] load error, src='+e.src));
+    // 首次用户交互后解锁播放
+    const unlock=()=>{
+        if(!MUSIC_STATE.enabled){return}
+        const active=document.querySelector('.page.active');
+        if(active)switchBgm(active.id);
+        document.removeEventListener('click',unlock,{once:false});
+        document.removeEventListener('touchstart',unlock,{once:false});
+    };
+    document.addEventListener('click',unlock,{once:true});
+    document.addEventListener('touchstart',unlock,{once:true});
+}
+function setBgmEnabled(on){
+    MUSIC_STATE.enabled=on;
+    if(!on){
+        ['bgm-home','bgm-explore'].forEach(id=>{const a=document.getElementById(id);if(a){a.pause();a.currentTime=0}});
+        MUSIC_STATE.current=null;
+    }else{
+        const active=document.querySelector('.page.active');
+        if(active)switchBgm(active.id);
+    }
+}
+function switchBgm(pageId){
+    if(!MUSIC_STATE.enabled)return;
+    const h=document.getElementById('bgm-home');
+    const e=document.getElementById('bgm-explore');
+    if(!h||!e)return;
+    // home 组：首页、仓库、工作台、合成表、上锁房间
+    const homeGroup=['page-main','page-home','page-home-craft'];
+    // explore 组：大楼探索、街头冒险
+    const exploreGroup=['page-building','page-down'];
+    let target=null;
+    if(homeGroup.includes(pageId))target='home';
+    else if(exploreGroup.includes(pageId))target='explore';
+    else return;  // 死亡页等其他页面：保持当前音乐不变
+    // 同一个 audio 不重播（时间连续）
+    if(MUSIC_STATE.current===target)return;
+    if(target==='home'){
+        e.pause();h.currentTime=0;h.play().catch(err=>console.warn('[bgm-home] play failed:',err.message));
+    }else{
+        h.pause();e.currentTime=0;e.play().catch(err=>console.warn('[bgm-explore] play failed:',err.message));
+    }
+    MUSIC_STATE.current=target;
+    console.log('[switchBgm] playing:',target);
+}
+// (stories moved above generateStory to fix TDZ undefined issue)
+</script>
+<script id="script-part2">
+/* ======= 渲染 ======= */
+function renderMain(){
+    const el=document.getElementById('main-status-panel');el.innerHTML="";
+    [{k:"hunger",l:"饱 腹 度"},{k:"sanity",l:"理 智 度"},{k:"health",l:"健 康 度"}].forEach(it=>{
+        const v=state[it.k];const low=v<=25;
+        el.innerHTML+=`<div class="status-item"><div class="status-label"><span>${it.l}</span><span class="value ${low?'low':''}">${v}%</span></div><div class="progress-bar"><div class="progress-fill ${low?'low':''}" style="width:${v}%"></div></div></div>`;
+    });
+    // 顶部：金币 + 商店 + 今日经历 + 时段
+    const slots=TIME_SLOTS.map((t,i)=>`<div class="time-slot ${i<state.timeIdx?'past':i===state.timeIdx?'current':''}">${i+1}</div>`).join('');
+    let shopBtn=state.day>=5?`<button class="shop-icon" id="btn-shop">商 店</button>`:"";
+    let logBtn=`<button class="shop-icon" id="btn-daily-log" title="今日经历">今 日 经 历</button>`;
+    document.getElementById('main-top-bar').innerHTML=`
+        <div class="top-info-item"><span class="label">金币</span><span class="num" id="top-gold">￥${state.gold}</span></div>
+        ${shopBtn}${logBtn}
+        <div class="top-info-item" style="flex-direction:column;align-items:flex-end;gap:3px">
+            <div><span class="label">时间</span><span class="num">${TIME_SLOTS[state.timeIdx]}</span></div>
+            <div class="time-slots">${slots}</div>
+        </div>`;
+    const sb=document.getElementById('btn-shop');if(sb)sb.addEventListener('click',openShop);
+    const dl=document.getElementById('btn-daily-log');if(dl)dl.addEventListener('click',showDailyLog);
+
+    document.getElementById('day-count').textContent=state.day;
+    typewriter(document.getElementById('story-text'),generateStory());
+    const out=document.getElementById('btn-out');if(out)out.disabled=state.gameLocked;
+    const bd=document.getElementById('btn-down');if(bd)bd.disabled=state.gameLocked;
+    // Day 30 救援触发
+    if(state.day>=30 && !state.rescueShown){
+        state.rescueShown=true;saveState();
+        openModal("—— 紧 急 广 播 ——","你 的 手 机 突 然 响 起。\n不 是 电 话，是 一 条 紧 急 广 播——\n\n「 各 位 倖 存 者 注 意：\n官 方 救 援 已 到！\n请 立 刻 前 往 所 在 楼 宇 的 天 台 汇 合！\n直 升 机 将 在 15 分 钟 后 起 飞！」",[
+            {label:"立 刻 跑 上 天 台",cls:"",onClick:()=>showRescueEnding()},
+            {label:"……不 去",cls:"ghost",onClick:()=>{}}
+        ]);
+    }
+    // 上锁房间按钮三态更新（上锁是居家活动，不受 gameLocked 限制）
+    const lrHint=document.getElementById('locked-room-hint');
+    const lrBtn=document.getElementById('btn-locked-room');
+    if(lrHint&&lrBtn){
+        // 只有 timeIdx===4（恰好18:00那一节）能开；timeIdx<4（早上）或 timeIdx>=5（21:00+）都上锁
+        const canOpen=state.timeIdx===4&&!state.lockedRoomOpened;
+        if(state.lockedRoomOpened){lrHint.textContent='已 上 锁'}
+        else if(state.timeIdx!==4){lrHint.textContent='已 上 锁'}
+        else{lrHint.textContent='可 尝 试 打 开'}
+        lrBtn.disabled=!canOpen;
+    }
+    saveState();
+}
+// Day 30 救援结局
+function showRescueEnding(){
+    // 用户触发救援 → 扣健康50 + 理智50
+    applyDelta({health:-50,sanity:-50});
+    const story=RESCUE_STORIES[(state.day-30)%RESCUE_STORIES.length];
+    openModal("—— 结 局 ——",story,[
+        {label:"不！这 不 是 真 的！",cls:"danger",onClick:()=>{closeModal();renderMain();switchPage('page-main');}}
+    ]);
+}
+
+function renderInvGrid(gridEl){
+    gridEl.innerHTML="";
+    // 优先排序：食物→水→医疗→武器→娱乐→工具→空间→零件
+    const typeOrder={food_ready:1,water_ready:2,medical:3,weapon:4,entertainment:5,tool:6,space:7,food_part:8,medical_part:9,entertainment_part:10,part:11};
+    const keys=Object.keys(state.inventory).filter(k=>(state.inventory[k]||0)>0);
+    // 计算总件数（数量之和）
+    const totalCount=keys.reduce((s,k)=>s+state.inventory[k],0);
+    // 更新标题计数
+    const cnt=document.getElementById('inv-count');if(cnt)cnt.textContent=totalCount>0?`· 共 ${totalCount} 件`:"（空）";
+    if(keys.length===0){gridEl.innerHTML=`<div class="inv-cell empty" style="grid-column:1/-1">仓库空空如也</div>`;return}
+    keys.sort((a,b)=>(typeOrder[ITEMS[a].type]||99)-(typeOrder[ITEMS[b].type]||99));
+    keys.forEach(key=>{
+        const qty=state.inventory[key];if(!qty)return;
+        const it=ITEMS[key];
+        const c=document.createElement('div');c.className='inv-cell';
+        c.innerHTML=`<div class="cell-icon">${it.icon}</div><div class="cell-name">${it.name}${qty>1?' ×'+qty:''}</div><span class="tag ${ITEM_TYPES[it.type].tagClass}" style="margin-top:3px">${ITEM_TYPES[it.type].label}</span><div class="cell-price">￥${Math.round(it.basePrice*state.priceMult)}</div>`;
+        c.onclick=()=>showItemDetail(key);gridEl.appendChild(c);
+    });
+}
+function showItemDetail(key){
+    const it=ITEMS[key];const p=Math.round(it.basePrice*state.priceMult);
+    // 查 RECIPE_POOL：哪些配方用了这个零件？（零件类）或者合成它需要什么？（成品类）
+    let synthesisInfo="";
+    if(it.type==='part'||it.type==='food_part'||it.type==='medical_part'||it.type==='entertainment_part'){
+        // 查找以该零件为 ingredient 的配方
+        const usedIn=RECIPE_POOL.filter(r=>Object.keys(r.ingredients).includes(key));
+        if(usedIn.length>0){
+            synthesisInfo="\n\n【可 用 于 合 成】：\n"+usedIn.map(r=>{
+                const res=ITEMS[r.result];
+                return `· ${r.name} → ${res.icon}${res.name} ×${r.qty}（${ITEM_TYPES[res.type].label}）`;
+            }).join("\n");
+        }else{
+            synthesisInfo="\n\n（暂 未 发 现 可 用 该 物 资 合 成 的 配 方）";
+        }
+    }
+    openModal(`${it.icon} ${it.name}`,`类 型：${ITEM_TYPES[it.type].label}\n\n物 价：￥${p}（x${state.priceMult.toFixed(2)}）\n\n${it.desc}${synthesisInfo}`,[{label:"关 闭",cls:"ghost"}]);
+}
+
+// ======= 仓库页 =======
+function renderHomePage(){
+    switchPage('page-home');
+    // 进食槽
+    refreshMeal('meal-food','mealFood','food_ready');
+    refreshMeal('meal-water','mealWater','water_ready');
+    refreshMeal('meal-medical','mealMed','medical-entertainment');
+    renderInvGrid(document.getElementById('inv-grid'));saveState();
+}
+function renderCraftPage(){
+    switchPage('page-home-craft');
+    renderRecipes();saveState();
+}
+function showClues(){
+    const clues=state.clues||[];
+    const unused=clues.filter(c=>!c.used);
+    const all=clues;
+    if(all.length===0){
+        openModal("—— 📜 小 纸 条 ——","你还没有小纸条。\n\n去「外出的邻居」那里找找新消息。\n也许会有新的线索。",[{label:"好",onClick:()=>{}}]);
+        return;
+    }
+    // 动态构建 HTML，未使用=绿色，已使用=灰色
+    openModalRaw("—— 📜 小 纸 条 ——",`你 一 共 收 集 了 ${all.length} 条 线 索（${unused.length} 条 未 使 用）：`,()=>{
+        const body=document.getElementById('modal-body');
+        const list=document.createElement('div');
+        list.style.cssText='display:flex;flex-direction:column;gap:8px;margin:8px 0';
+        all.forEach((c,i)=>{
+            const row=document.createElement('div');
+            row.style.cssText=`padding:8px 10px;border-left:3px solid ${c.used?'#555':'#4ade80'};background:#1a1a1a;font-size:12px;letter-spacing:1px;line-height:1.7`;
+            row.innerHTML=`<span style="color:${c.used?'#555':'#4ade80'}">${i+1}. ${c.text}</span>${c.used?' <span style="color:#555;font-size:10px">（已使用）</span>':''}`;
+            list.appendChild(row);
+        });
+        body.appendChild(list);
+        body.innerHTML+=`<div style="font-size:11px;color:#666;margin-top:8px">（去「逃 串 商 人」那 里 可 以 用 绿 色 线 索 换 ￥100 金 币 或 随 机 物 资）</div>`;
+        const act=document.getElementById('modal-actions');act.innerHTML="";
+        const ok=document.createElement('button');ok.className='wide-btn';ok.textContent='好';ok.onclick=()=>closeModal();act.appendChild(ok);
+    });
+}
+function refreshMeal(elId,key,type){
+    const el=document.getElementById(elId);const cur=state[key];
+    if(cur){
+        const it=ITEMS[cur];el.className='meal-slot filled';
+        const eff=it.type==='medical'?'+5健康':(it.type==='entertainment'?'+5理智':'');
+        el.innerHTML=`<div class="cell-icon">${it.icon}</div><div class="slot-name">${it.name}${eff?'<span style="color:#aaa;font-size:11px">('+eff+')</span>':''}</div><div class="slot-remove">点击移除</div>`;
+        el.onclick=()=>{addItem(cur);state[key]=null;renderHomePage()};
+    }else{
+        el.className='meal-slot';
+        let hint;
+        if(type==='food_ready')hint='点 此 添 加 食 物';
+        else if(type==='water_ready')hint='点 此 添 加 水';
+        else hint='点 此 添 加 药 品 / 娱 乐';
+        el.textContent=hint;
+        el.onclick=()=>pickForMeal(key,type);
+    }
+}
+function pickForMeal(key,type){
+    let allowTypes=[type];
+    if(type==='medical-entertainment')allowTypes=['medical','entertainment'];
+    const pool=Object.keys(state.inventory).filter(k=>allowTypes.includes(ITEMS[k].type));
+    if(pool.length===0){
+        let label;
+        if(type==='food_ready')label="仓库里没有食物了。";
+        else if(type==='water_ready')label="仓库里没有水了。";
+        else label="仓库里没有药品或娱乐物品了。";
+        openModal("—— 空 仓 ——",label,[{label:"好"}]);return
+    }
+    const a=pool.map(k=>{const it=ITEMS[k];return{label:`${it.icon} ${it.name}（${ITEM_TYPES[it.type].label}）`,cls:"",onClick:()=>{
+        removeItem(k,1);state[key]=k;
+        // 根据选择类型记录经历
+        if(key==='mealFood')logEvent("今 日 食 物",{},[k]);
+        else if(key==='mealWater')logEvent("今 日 饮 水",{});
+        else if(key==='mealMed')logEvent("今 日 药 品",{},[k]);
+        renderHomePage();
+    }}});
+    a.push({label:"取 消",cls:"ghost"});
+    let title;
+    if(type==='food_ready')title="选 择 食 物";
+    else if(type==='water_ready')title="选 择 水";
+    else title="选 择 药 品 或 娱 乐 物 品";
+    openModal(title,"",a);
+}
+function renderRecipes(){
+    if(!state.dailyRecipes||state.dailyRecipes.length!==8)state.dailyRecipes=generateDailyRecipes();
+    const box=document.getElementById('recipe-list');box.innerHTML="";
+    // 按 result 类型分组
+    const groups={food_ready:"🍖 食 物",water_ready:"💧 水",medical:"💊 医 疗",entertainment:"🎮 娱 乐",tool:"🛠️ 工 具",weapon:"🔫 武 器",space:"📦 空 间"};
+    const byG={};
+    state.dailyRecipes.forEach(r=>{const g=ITEMS[r.result].type;if(!byG[g])byG[g]=[];byG[g].push(r)});
+    // 按 groups 顺序渲染
+    Object.keys(groups).forEach(g=>{
+        const list=byG[g]||[];if(list.length===0)return;
+        const tag=document.createElement('div');
+        tag.textContent=groups[g];
+        tag.style.cssText='font-size:12px;color:#aaa;letter-spacing:3px;margin:14px 2px 6px;padding:2px 0;border-bottom:1px dashed #333;font-weight:bold';
+        box.appendChild(tag);
+        list.forEach(r=>{
+            const ok=Object.entries(r.ingredients).every(([k,q])=>(state.inventory[k]||0)>=q);
+            const ingStr=Object.entries(r.ingredients).map(([k,q])=>ITEMS[k].icon+ITEMS[k].name+"×"+q).join(" + ");
+            const resIt=ITEMS[r.result];
+            const div=document.createElement('div');div.className='recipe-item';
+            div.innerHTML=`<div class="recipe-ingredients">${ingStr} →</div><div class="recipe-result">得 ${resIt.icon}${resIt.name} ×${r.qty}</div><button class="recipe-btn" ${ok?'':'disabled'}>${ok?'合 成':'材 料 不 足'}</button>`;
+            if(ok)div.querySelector('.recipe-btn').onclick=()=>{
+                Object.entries(r.ingredients).forEach(([k,q])=>removeItem(k,q));
+                addItem(r.result,r.qty);saveState();renderRecipes();renderInvGrid(document.getElementById('inv-grid'));
+                logEvent("零 件 合 成",{},[r.result]);
+                openModal("—— 合 成 ——","你 做 出 了 "+resIt.icon+" "+resIt.name+" ×"+r.qty+"。",[{label:"好"}]);
+            };
+            box.appendChild(div);
+        });
+    });
+}
+
+// ======= 外出页 =======
+function renderOutPage(){
+    switchPage('page-out');
+    renderMain();// 更新顶部条
+    const bb=document.getElementById('btn-building');if(bb)bb.disabled=state.gameLocked;
+    // 如果用户没带任何东西出门，自动从 inventory 帮选匹配物品
+    if(getCarriedArray().length===0){
+        const inv=Object.keys(state.inventory).filter(k=>(state.inventory[k]||0)>0);
+        inv.forEach(k=>{
+            const it=ITEMS[k];
+            if((it.type==='food_ready'||it.type==='water_ready') && !state.carried.food1)state.carried.food1=k;
+            else if((it.type==='food_ready'||it.type==='water_ready') && !state.carried.food2)state.carried.food2=k;
+            else if(it.type==='weapon' && !state.carried.weapon)state.carried.weapon=k;
+            else if((it.type==='tool'||it.type==='space') && !state.carried.tool)state.carried.tool=k;
+        });
+        saveState();
+    }
+    renderCarrySlots();saveState();
+}
+function renderCarrySlots(){
+    const box=document.getElementById('carry-slots-fixed');box.innerHTML="";
+    const def=[{k:"food1",l:"食/水 成 品",allow:["food_ready","water_ready"]},{k:"food2",l:"食/水 成 品",allow:["food_ready","water_ready"]},{k:"weapon",l:"武 器",allow:["weapon"]},{k:"tool",l:"工 具/空 间",allow:["tool","space"]}];
+    def.forEach(d=>{
+        const cur=state.carried[d.k];const div=document.createElement('div');
+        div.className='carry-slot-fixed'+(cur?' filled':'');
+        if(cur){const it=ITEMS[cur];
+            div.innerHTML=`<div class="slot-type">${d.l}</div><div class="cell-icon">${it.icon}</div><div class="cell-name">${it.name}</div><div class="slot-remove">点击移除</div>`;
+            div.onclick=()=>{state.carried[d.k]=null;renderCarrySlots();saveState()};
+        }else{
+            div.innerHTML=`<div class="slot-type">${d.l}</div><div class="cell-name">点 此 选 择</div>`;
+            div.onclick=()=>pickCarryItem(d.k,d.allow);
+        }
+        box.appendChild(div);
+    });
+}
+function pickCarryItem(slotKey,allowTypes){
+    // 找到已被其他槽位占用的 key
+    const otherUsedKeys=new Set();
+    Object.entries(state.carried).forEach(([sk,val])=>{if(val&&sk!==slotKey)otherUsedKeys.add(val)});
+    // 过滤：类型匹配 AND 没被其他槽占用 AND 库存有
+    const pool=Object.keys(state.inventory).filter(k=>allowTypes.includes(ITEMS[k].type)&&!otherUsedKeys.has(k)&&(state.inventory[k]||0)>0);
+    if(pool.length===0){openModal("—— 没 有 ——","仓 库 里 没 有 可 选 的 物 品 了。",[{label:"好"}]);return}
+    const actions=[];
+    pool.forEach(k=>{
+        const it=ITEMS[k];
+        actions.push({label:`${it.icon} ${it.name} ×${state.inventory[k]}`,cls:"",onClick:()=>{state.carried[slotKey]=k;renderCarrySlots();saveState()}});
+    });
+    actions.push({label:"取 消",cls:"ghost"});
+    openModal("选 择 物 品", "从 仓 库 选 一 件 放 进 这 格", actions);
+}
+
+// ======= 大楼房间 =======
+function renderBuildingPage(){
+    // 如果刚完成了新的房间（enteredRoomIndices 增加了），补推进时间
+    while(roomsTimeAdvanced < state.enteredRoomIndices.length){
+        advanceTime(1);
+        roomsTimeAdvanced++;
+    }
+    // roomOrder 强兜底：必须是 4 种唯一类型
+    if(!state.roomOrder||state.roomOrder.length!==4||new Set(state.roomOrder).size!==4||
+       !state.roomOrder.every(t=>['rps','stranger','monster','friend'].includes(t))){
+        console.warn('[renderBuildingPage] roomOrder 无效，重新 shuffle:',JSON.stringify(state.roomOrder));
+        state.roomOrder=shuffleRooms();saveState();
+    }
+    console.log('[renderBuildingPage] roomOrder='+JSON.stringify(state.roomOrder)+' enteredRoomIndices='+JSON.stringify(state.enteredRoomIndices));
+    switchPage('page-building');
+    const box=document.getElementById('room-doors');box.innerHTML="";
+    if(state.enteredRoomIndices.length>=4){
+        box.innerHTML=`<div class="hint-text" style="grid-column:1/-1">今 日 房 间 已 全 部 探 索</div>`;
+        return;
+    }
+    state.roomOrder.forEach((type,idx)=>{
+        // 用 enteredRoomIndices 精准追踪，而不是按顺序 roomEntered
+        if(state.enteredRoomIndices.includes(idx)){
+            const d=document.createElement('div');d.className='room-door opened';
+            d.innerHTML=`<div class="door-frame"></div><div class="door-label">已 探 索</div>`;
+            box.appendChild(d);return;
+        }
+        const d=document.createElement('div');d.className='room-door';
+        d.innerHTML=`<div class="door-frame"></div><div class="door-label">打 开</div>`;
+        d.onclick=()=>enterRoom(type,d,idx);box.appendChild(d);
+    });
+    saveState();
+}
+function enterRoom(type,doorEl,idx){
+    // 防同一扇门被重复点击：立即移除 onclick
+    doorEl.onclick=null;
+    doorEl.style.pointerEvents='none';
+    // 精准记录被点击的门索引（不是 roomEntered 计数器）
+    if(!state.enteredRoomIndices.includes(idx)){
+        state.enteredRoomIndices.push(idx);
+    }
+    console.log('[enterRoom] idx='+idx+' type='+type+' enteredRoomIndices='+JSON.stringify(state.enteredRoomIndices));
+    doorEl.classList.add('opened');
+    doorEl.innerHTML=`<div class="door-frame"></div><div class="door-label">已 探 索</div>`;
+    logEvent("打 开 了 一 扇 深 灰 色 木 门");
+    saveState();
+    // 先执行房间事件。时间推进放到 renderBuildingPage 里（用户完完整整走出去之后才补）
+    switch(type){
+        case 'rps': roomRPS(); break;
+        case 'stranger': roomStranger(); break;
+        case 'monster': roomMonster(); break;
+        case 'friend': roomFriend(); break;
+    }
+    // 不再在这里 advanceTime —— 用户可能要在房间弹窗里点多层按钮才能走出去
+}
+function roomRPS(){
+    openModal("—— 剪 刀 · 石 头 · 布 ——","「墙 角 那 人 想 跟 你 玩 一 把。\n赢 了 拿 奖 品，输 了 抵 押 物 没 了。」",[
+        {label:"我 要 参 加",cls:"",onClick:()=>rpsPickBet()},
+        {label:"不 玩 了",cls:"ghost",onClick:()=>{closeModal();logEvent("遇 到 邻 居：怪 人。\n你 选 择 不 和 他 玩 游 戏。");renderBuildingPage()}}
+    ]);
+}
+function rpsPickBet(){
+    const inv=Object.keys(state.inventory).filter(k=>(state.inventory[k]||0)>0);
+    if(inv.length===0){openModal("—— 无 物 可 抵 押 ——","你 的 仓 库 里 没 有 东 西。",[{label:"好",onClick:()=>renderBuildingPage()}]);return}
+    openModalRaw("选 择 你 的 物 资","从 仓 库 里 选 择 一 项 物 品 作 为 抵 押：",()=>{
+        const body=document.getElementById('modal-body');
+        // 改成 grid 布局展示可选物资
+        const grid=document.createElement('div');
+        grid.style.cssText='display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px';
+        inv.forEach(k=>{
+            const it=ITEMS[k];
+            const cell=document.createElement('div');
+            cell.style.cssText='border:1px solid #333;padding:6px;text-align:center;background:#0a0a0a;cursor:pointer;border-radius:3px';
+            cell.innerHTML=`<div style="font-size:21px">${it.icon}</div><div style="font-size:11px;color:#ccc;margin-top:2px">${it.name}</div><div style="font-size:10px;color:#666">×${state.inventory[k]}</div>`;
+            cell.onclick=()=>rpsPlay(k);
+            grid.appendChild(cell);
+        });
+        body.appendChild(grid);
+        const act=document.getElementById('modal-actions');act.innerHTML="";
+        const leave=document.createElement('button');leave.className='ghost wide-btn';leave.textContent="不 玩 了";
+        leave.onclick=()=>{closeModal();renderBuildingPage()};act.appendChild(leave);
+    });
+}
+function rpsPlay(betKey){
+    const cpu=randomPick(['rock','scissors','paper']);
+    document.getElementById('modal-body').innerHTML=`你 用 ${ITEMS[betKey].icon} ${ITEMS[betKey].name} 作 为 抵 押 物 品。\n\n请 出 招：`;
+    const act=document.getElementById('modal-actions');act.innerHTML="";
+    const row=document.createElement('div');row.className='rps-row';
+    let picked=null;
+    [['rock','✊'],['scissors','✌'],['paper','✋']].forEach(([s,l])=>{
+        const b=document.createElement('button');b.className='rps-btn';b.textContent=l;
+        b.onclick=()=>{
+            picked=s;
+            row.querySelectorAll('.rps-btn').forEach(btn=>btn.style.opacity='0.3');
+            b.style.opacity='1';
+            showRPSCountdown(()=>resolveRPS(picked,cpu,betKey));
+        };
+        row.appendChild(b);
+    });
+    act.appendChild(row);
+}
+function showRPSCountdown(cb){
+    const modalBody=document.getElementById('modal-body');
+    const modalAct=document.getElementById('modal-actions');
+    const modalTitle=document.getElementById('modal-title');
+    modalAct.innerHTML="";
+    // 固定 modal-body 尺寸，消除不同文字长度导致的方框差异
+    modalBody.style.cssText='text-align:center;min-height:100px;display:flex;align-items:center;justify-content:center;font-size:39px;color:#fff';
+    // 倒计时期间隐藏 modal-title
+    const oldTitle=modalTitle.textContent;modalTitle.textContent='';
+    const nums=['游 戏 开 始！','3','2','1'];
+    // 立即显示第一帧
+    let c=0;
+    modalBody.innerHTML=nums[0];
+    const iv=setInterval(()=>{
+        c++;
+        if(c<4){
+            modalBody.innerHTML=nums[c];
+        }else{
+            clearInterval(iv);
+            modalTitle.textContent=oldTitle;
+            cb();
+        }
+    },650);
+}
+function resolveRPS(player,cpu,betKey){
+    // 重置 RPS 倒计时留下的内联样式污染（cssText 清空）
+    const mb=document.getElementById('modal-body');
+    if(mb){mb.style.cssText=''}
+    let r;if(player===cpu)r="draw";
+    else if((player==='rock'&&cpu==='scissors')||(player==='scissors'&&cpu==='paper')||(player==='paper'&&cpu==='rock'))r="win";
+    else r="lose";
+    const p={rock:"✊",scissors:"✌",paper:"✋"};
+    let msg=`你：${p[player]}\n对 手：${p[cpu]}\n\n`;
+    if(r==="draw"){
+        msg+="平 局。物 资 拿 回 来。";
+        logEvent("怪人 平 局");
+        openModal("—— 结 果 ——",msg,[{label:"离 开",cls:"",onClick:()=>renderBuildingPage()}]);
+    }else if(r==="win"){
+        const k=weightedPick(LOOT_POOL);const it=ITEMS[k];
+        msg+=`你 赢 了！\n\n点 击 下 面 按 钮 收 下 奖 品：\n${it.icon} ${it.name}`;
+        logEvent("怪人 赢 了 奖 品 → "+it.icon+it.name);
+        openModal("—— 结 果 ——",msg,[{label:"收 下",cls:"",onClick:()=>{addItem(k);saveState();renderBuildingPage()}}]);
+    }else{
+        applyDelta({sanity:-5});
+        removeItem(betKey,1);
+        msg+=`你 输 了。\n抵 押 物 ${ITEMS[betKey].icon}${ITEMS[betKey].name} 被 收 没。\n—— 理 智 -5`;
+        logEvent("怪 人 和 你 玩 了 场 游 戏。\n你 输 掉 了 "+ITEMS[betKey].icon+ITEMS[betKey].name+"。\n→ 理 智 -5");
+        openModal("—— 结 果 ——",msg,[{label:"离 开",cls:"",onClick:()=>renderBuildingPage()}]);
+    }
+    saveState();
+}
+function roomStranger(){
+    // 6 种子类型等概率
+    const t=randomPick(['empty','curious','buyer','generous','angry','grandma']);
+    const names={empty:"空房间",curious:"外 出 回 来 的 邻 居",buyer:"逃 串 商 人",generous:"认 识 的 热 情 邻 居",angry:"暴 躁 的 冷 漠 邻 居",grandma:"盲 眼 的 老 婆 婆"};
+    logEvent("遇 到 邻 居："+names[t]);
+    if(t==='empty')strangerEmpty();
+    else if(t==='curious')strangerCurious2();
+    else if(t==='buyer')strangerBuyer2();
+    else if(t==='generous')strangerGenerous2();
+    else if(t==='angry')strangerAngry2();
+    else if(t==='grandma')strangerGrandma();
+}
+function strangerEmpty(){
+    logEvent("空 房 间");
+    openModal("—— 空 房 间 ——",
+`你路过这个房间。\n里面人去楼空。\n东西也被搬空了。\n可能有人比你更早来过这个房间了。`,
+    [{label:"离 开",cls:"",onClick:()=>renderBuildingPage()}]);
+}
+function strangerCurious2(){
+    // 外出回来的邻居：用携带出门的4项物资之一换小纸条
+    const carr=getCarriedArray();
+    if(carr.length===0){
+        openModal("—— 外 出 回 来 的 邻 居 ——",
+`「外面出大事了。\n我刚刚得到了一条重要信息。\n想知道的话，用东西跟我交换。」\n\n你今天没有携带任何物资，无法交换。`,
+        [{label:"离 开",cls:"ghost",onClick:()=>renderBuildingPage()}]);return;
+    }
+    const a=carr.map(k=>{
+        const it=ITEMS[k];
+        return{label:`用 ${it.icon} ${it.name} 换`,cls:"",onClick:()=>{
+            const msg=randomPick(CURIOUS_CLUES);
+            // 从 carried 里移除
+            const sk=Object.keys(state.carried).find(key=>state.carried[key]===k);
+            if(sk){state.carried[sk]=null}
+            state.clues.push({text:msg,used:false});
+            logEvent("用 携 带 的 "+ITEMS[k].icon+ITEMS[k].name+" 换 了 一 条 重 要 的 信 息（你 写 在 了 小 纸 条 上）");saveState();
+            openModal("—— 换 到 了 消 息 ——",msg,
+            [{label:"好",onClick:()=>renderBuildingPage()}]);
+        }};
+    });
+    a.push({label:"离 开",cls:"ghost",onClick:()=>renderBuildingPage()});
+    openModal("—— 外 出 回 来 的 邻 居 ——",
+`「外面出大事了。\n我刚刚得到了一条重要信息。\n想知道的话，用东西跟我交换。」`,a);
+}
+function strangerBuyer2(){
+    // 逃串商人：小纸条换金币/物资 + 每日1收1件物资 + 每日卖2个食物（用过后灰色禁用）
+    const unusedClues=(state.clues||[]).filter(c=>!c.used);
+    const carr=getCarriedArray();
+
+    // 0) 小纸条（不受每日限制）
+    const clueGoldA=unusedClues.length>0?{label:"用 1 条 小 纸 条 换 ￥100",cls:"",onClick:()=>{
+        const c=unusedClues[0];c.used=true;
+        applyDelta({gold:100});
+        logEvent("用 小 纸 条 换 金 币",{gold:100});
+        saveState();
+        openModal("—— 交 易 成 功 ——",`你 得 到 了 ￥100。`,[{label:"好",onClick:()=>strangerBuyer2()}]);
+    }}:null;
+    const clueItemA=unusedClues.length>0?{label:"用 1 条 小 纸 条 换 随 机 物 资",cls:"",onClick:()=>{
+        const c=unusedClues[0];c.used=true;
+        const k=weightedPick(LOOT_POOL);const it=ITEMS[k];addItem(k);
+        logEvent("用 小 纸 条 换 物 资",{},[k]);
+        saveState();
+        openModal("—— 交 易 成 功 ——",`你 得 到 了 ${it.icon} ${it.name} ×1。`,[{label:"好",onClick:()=>strangerBuyer2()}]);
+    }}:null;
+
+    // 1) 每日1收：卖1件携带物资给商人（商人预选1件，用过后灰色）
+    let sellBtn=null;
+    if(state.merchantSellUsed){
+        const soldKey=state.merchantSellUsed;
+        const soldIt=ITEMS[soldKey];
+        sellBtn={label:`卖 ${soldIt.icon} ${soldIt.name} · 今 日 已 使 用`,cls:"disabled",disabled:true};
+    }else{
+        const available=carr.filter(k=>k!==null);
+        if(available.length===0){
+            sellBtn={label:"（没 有 可 卖 的 物 资）",cls:"disabled",disabled:true};
+        }else{
+            // 每次进商人都让用户选一件卖（只要今日没卖过）
+            sellBtn={label:"卖 一 件 物 资 给 商 人",cls:"",onClick:()=>{
+                openModalRaw("选 择 卖 哪 件","从 携 带 的 物 资 中 选 一 件 卖 给 商 人：",()=>{
+                    const body=document.getElementById('modal-body');
+                    const grid=document.createElement('div');
+                    grid.style.cssText='display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px';
+                    available.forEach(k=>{
+                        const it=ITEMS[k];const p=Math.round(it.basePrice*state.priceMult*0.8);
+                        const cell=document.createElement('div');
+                        cell.style.cssText='border:1px solid #333;padding:6px;text-align:center;background:#0a0a0a;cursor:pointer;border-radius:3px';
+                        cell.innerHTML=`<div style="font-size:21px">${it.icon}</div><div style="font-size:11px;color:#ccc;margin-top:2px">${it.name}</div><div style="font-size:10px;color:#ffcc44">￥${p}</div>`;
+                        cell.onclick=()=>{
+                            applyDelta({gold:p});const sk=Object.keys(state.carried).find(key=>state.carried[key]===k);state.carried[sk]=null;
+                            state.merchantSellUsed=k;
+                            logEvent("卖 给 逃 串 商 人",{gold:p},[k]);saveState();
+                            closeModal();
+                            openModal("—— 交 易 成 功 ——",`你 得 到 了 ￥${p}。`,[{label:"好",onClick:()=>strangerBuyer2()}]);
+                        };
+                        grid.appendChild(cell);
+                    });
+                    body.appendChild(grid);
+                    const act=document.getElementById('modal-actions');act.innerHTML="";
+                    const noBtn=document.createElement('button');noBtn.className='wide-btn ghost';noBtn.textContent='不 卖 了';
+                    noBtn.onclick=()=>{closeModal();strangerBuyer2()};
+                    act.appendChild(noBtn);
+                });
+            }};
+        }
+    }
+
+    // 2) 每日2卖：卖2个固定食物（用过后灰色）
+    const foodBtns=[];
+    [state.merchantFood1,state.merchantFood2].forEach(k=>{
+        if(!k){foodBtns.push({label:"（商 人 今 日 没 有 食 物）",cls:"disabled",disabled:true});return}
+        const it=ITEMS[k];const p=Math.round(it.basePrice*state.priceMult*1.2);
+        const bought=state.merchantBought.includes(k);
+        if(bought){
+            foodBtns.push({label:`买 ${it.icon} ${it.name} ￥${p} · 已 使 用`,cls:"disabled",disabled:true});
+        }else{
+            foodBtns.push({label:`买 ${it.icon} ${it.name} ￥${p}`,cls:"",onClick:()=>{
+                if(state.gold<p){openModal("—— 金 币 不 足 ——","你 的 金 币 不 够。",[{label:"好",onClick:()=>strangerBuyer2()}]);return}
+                applyDelta({gold:-p});addItem(k);
+                state.merchantBought.push(k);
+                logEvent("从 逃 串 商 人 处 购 买 食 物",{gold:-p},[k]);saveState();
+                openModal("—— 购 买 成 功 ——",`你 买 了 ${it.icon} ${it.name}。`,[{label:"好",onClick:()=>strangerBuyer2()}]);
+            }});
+        }
+    });
+
+    const a=[clueGoldA,clueItemA,sellBtn,...foodBtns].filter(Boolean);
+    a.push({label:"离 开",cls:"ghost",onClick:()=>{closeModal();renderBuildingPage()}});
+    // 用 openModalRaw 支持 disabled 按钮（普通 openModal 的 actions 数组不支持 disabled）
+    openModalRaw("—— 逃 串 商 人 ——",
+`「那边太乱了。\n我过来躲一会。\n你要点什么吗？」\n\n（小纸条可以换金币或物资；今日还有1个收购名额 + 2样食物可买。）`,
+    ()=>{
+        const act=document.getElementById('modal-actions');act.innerHTML="";
+        a.forEach(b=>{
+            const btn=document.createElement('button');
+            btn.textContent=b.label;
+            if(b.disabled){
+                btn.className='wide-btn disabled';btn.disabled=true;
+                btn.style.opacity='0.4';btn.style.cursor='not-allowed';
+            }else{
+                btn.className='wide-btn '+(b.cls||'');
+                btn.onclick=b.onClick;
+            }
+            act.appendChild(btn);
+        });
+    });
+}
+function strangerGenerous2(){
+    const k=weightedPick(LOOT_POOL);const it=ITEMS[k];addItem(k);
+    const f=state.friendName;
+    logEvent(`${f} 赠 送 ${it.icon}${it.name}`);
+    openModal("—— 认 识 的 热 情 邻 居 ——",
+`「你怎么来了。\n快走吧。\n这里不安全。\n拿着 ${it.icon} ${it.name} 就快回家。\n好好活着。」`,
+    [{label:"离 开",cls:"",onClick:()=>renderBuildingPage()}]);
+}
+function strangerAngry2(){
+    applyDelta({sanity:-3});
+    logEvent("被 暴 躁 冷 漠 邻 居 吓 到",{sanity:-3});
+    openModal("—— 暴 躁 的 冷 漠 邻 居 ——",
+`暴躁邻居骂道：\n「做什么！\n鬼鬼祟祟做什么！\n快离开这里！」\n\n（他的身后似乎有不寻常的声音...）\n你定睛一看，被吓了一跳。\n（是一个被牢牢绑着的丧尸！）\n\n—— 理 智 -3`,
+    [{label:"赶 紧 走 开",cls:"danger",onClick:()=>renderBuildingPage()}]);
+}
+function strangerGrandma(){
+    // 盲眼老婆婆：出示2-3样工具零件，三个选项
+    const partPool=Object.keys(ITEMS).filter(k=>ITEMS[k].type==='part');
+    const offer=shuffleRooms(partPool).slice(0,rand(2,3));
+    openModal("—— 盲 眼 的 老 婆 婆 ——",
+`「你来了...\n咳咳咳。\n帮我看看这个还能用吗？\n婆婆不小心摔地上了。」\n\n婆婆递给你：\n${offer.map(k=>ITEMS[k].icon+" "+ITEMS[k].name).join("、")}`,
+    [
+        {label:"协 助 组 装",cls:"",onClick:()=>{
+            offer.forEach(k=>addItem(k));
+            logEvent("帮 老 婆 婆 组 装，得 到 全 部 零 件："+offer.map(k=>ITEMS[k].icon+ITEMS[k].name).join("、"));
+            openModal("—— 盲 眼 的 老 婆 婆 ——",
+`「谢谢你孩子。\n如果不是有你接援。\n咳咳...婆婆早就撑不下去了。\n世道难啊...」`,
+            [{label:"会 好 的，婆 婆",onClick:()=>renderBuildingPage()}]);
+        }},
+        {label:"昧 下 一 件",cls:"",onClick:()=>{
+            // 得到 1 件
+            const pick=offer[rand(0,offer.length-1)];
+            addItem(pick);
+            logEvent("昧 下 老 婆 婆 一 件 零 件："+ITEMS[pick].icon+ITEMS[pick].name);
+            openModal("—— 盲 眼 的 老 婆 婆 ——",
+`「算了算了。\n坏了就坏了吧。\n咳咳...也是几十年老物件了。\n也不知道婆婆日后还有没有机会再买个新的...」`,
+            [{label:"会 好 的，婆 婆",onClick:()=>renderBuildingPage()}]);
+        }},
+        {label:"物 资 交 换",cls:"",onClick:()=>{
+            // 用携带物资换一件
+            const carr=getCarriedArray();
+            if(carr.length===0){
+                openModal("—— 物 资 交 换 ——","你 今 天 没 有 携 带 任 何 物 资，婆 婆 不 换。",[{label:"好",onClick:()=>renderBuildingPage()}]);return;
+            }
+            // 选一件携带物资换一件零件
+            const give=carr[rand(0,carr.length-1)];
+            const get=offer[rand(0,offer.length-1)];
+            const sk=Object.keys(state.carried).find(key=>state.carried[key]===give);
+            if(sk)state.carried[sk]=null;
+            addItem(get);
+            logEvent("用 携 带 的 "+ITEMS[give].icon+ITEMS[give].name+" 跟 老 婆 婆 换 到 "+ITEMS[get].icon+ITEMS[get].name);saveState();
+            openModal("—— 盲 眼 的 老 婆 婆 ——",
+`「不行不行。\n婆婆怎么能要你的东西。\n咳咳...\n婆婆老了。\n东西也用不长久了。\n你还年轻，以后还有很长的路走...」\n\n（你 用 ${ITEMS[give].icon} ${ITEMS[give].name} 换 到 了 ${ITEMS[get].icon} ${ITEMS[get].name}）`,
+            [{label:"拿 着 吧，婆 婆",onClick:()=>renderBuildingPage()}]);
+        }},
+        {label:"离 开",cls:"ghost",onClick:()=>renderBuildingPage()}
+    ]);
+}
+function roomMonster(){
+    const hasW=getCarriedArray().some(k=>ITEMS[k].type==='weapon');
+    let delta,msg;
+    if(hasW){
+        delta={sanity:-5};
+        msg=`空 荡 的 房 间 里 突 然 冲 出 个 怪 物。\n你 被 吓 了 一 跳。\n立 即 拿 起 你 的 武 器。\n一 番 争 斗 后，将 它 击 倒 在 地。\n幸 好 没 有 受 伤。\n\n—— 理 智 -5`;
+    }else{
+        delta={sanity:-5,health:-5};
+        msg=`空 荡 的 房 间 里 突 然 冲 出 个 怪 物。\n你 被 吓 了 一 跳。\n可 是 今 天 你 没 有 携 带 任 何 防 身 武 器。\n转 身 往 外 逃 跑。\n在 楼 梯 摔 了 一 跤。\n\n—— 理 智 -5，健 康 -5`;
+    }
+    applyDelta(delta);
+    logEvent("遇 到 怪 物"+(hasW?"（有 武 器）":"（无 武 器）"),delta);
+    saveState();
+    openModal("—— 怪 物 ——",msg,[{label:"跑 开",cls:"danger",onClick:()=>{
+        const dc=checkDeath();if(dc.dead){showDeathPage(dc.reason);return}
+        renderBuildingPage();
+    }}]);
+}
+function roomFriend(){
+    if(state.friendName==="好友"){
+        openModalRaw("—— 旧 友 ——","你 遇 到 了 以 前 的 朋 友。\n他 看 起 来 还 好。\n\n你 想 怎 么 叫 他？",()=>{
+            document.getElementById('modal-body').innerHTML=`<div style="display:flex;gap:6px"><input id="friend-input" type="text" placeholder="输入名字（2-6字）" maxlength="6"></div>`;
+            const input=document.getElementById('friend-input');setTimeout(()=>input.focus(),50);
+            const act=document.getElementById('modal-actions');act.innerHTML="";
+            const confirm=document.createElement('button');confirm.className='wide-btn';confirm.textContent="确 定";
+            confirm.onclick=()=>{state.friendName=(input.value.trim()||"阿明");saveState();friendEvent()};
+            act.appendChild(confirm);
+        });return;
+    }
+    friendEvent();
+}
+function friendEvent(){
+    const f=state.friendName;
+    const askFood=Math.random()<0.5;
+    if(askFood){
+        const foods=getCarriedArray().filter(k=>ITEMS[k].type==='food_ready');
+        if(foods.length===0){
+            logEvent(`你去了朋友那里，但是没有食物赠予朋友。\n →朋友决定出门找吃的，让你先回家。`);
+            openModal(`—— ${f} ——`,f+" 说：「给 我 点 吃 的，我 快 饿 死 了。」\n你 没 有 带 食 物。",[{label:"好",onClick:()=>renderBuildingPage()}]);return}
+        const a=foods.map(k=>{const it=ITEMS[k];return{label:`送 ${it.icon} ${it.name}`,cls:"",onClick:()=>{
+            removeItem(k);const sk=Object.keys(state.carried).find(x=>state.carried[x]===k);state.carried[sk]=null;
+            const k2=weightedPick(LOOT_POOL);const it2=ITEMS[k2];addItem(k2);
+            logEvent(`送 ${it.icon}${it.name} 给 ${f}，${f} 回赠 ${it2.icon}${it2.name}`);saveState();
+            const story=randomPick(FRIEND_ASK_STORIES).replace(/物资/g,it2.icon+" "+it2.name).replace(/朋友/g,f);
+            openModal(`—— ${f} ——`,story,[{label:"收 下",onClick:()=>renderBuildingPage()}]);
+        }}});
+        a.push({label:"拒 绝",cls:"ghost",onClick:()=>renderBuildingPage()});
+        openModal(`—— ${f} ——`,f+" 说：「给 我 点 吃 的，我 回 你 礼 物。」",a);
+    }else{
+        const k=weightedPick(LOOT_POOL);const it=ITEMS[k];addItem(k);
+        logEvent(`${f} 赠 送 ${it.icon}${it.name}`);
+        // 从 FRIEND_STORIES 随机选一个，替换占位符
+        const s=randomPick(FRIEND_STORIES).replace(/物资/g,it.icon+" "+it.name).replace(/朋友/g,f);
+        openModal(`—— ${f} ——`,s,[{label:"好",onClick:()=>renderBuildingPage()}]);
+    }
+}
+
+function openLockedRoom(){
+    // 18:00 前（timeIdx<4）不能打开
+    if(state.timeIdx<4){
+        openModal("—— 上 锁 房 间 ——","现 在 还 不 到 时 候。\n\n也 许 晚 上 再 来 试 试？",[
+            {label:"好",onClick:()=>{}}
+        ]);return;
+    }
+    // 已开过的当天不再弹窗 —— renderMain 会把按钮设为 disabled+已上锁
+    if(state.lockedRoomOpened){return}
+    // 50% 概率成功（debug: 每次执行都 log）
+    const r=Math.random();const success=r<0.5;
+    console.log('[上锁房间] Math.random='+r.toFixed(4)+' success='+success);
+    state.lockedRoomOpened=true;
+    // 关闭弹窗后：时间直接到 21:00，不弹任何休息/黑夜弹窗
+    const onClose=()=>{
+        state.timeIdx=TIME_SLOTS.length-1;
+        state.gameLocked=true;
+        enteredTimeIdx=state.timeIdx; // 标记已处理
+        saveState();
+        renderMain();switchPage('page-main');
+    };
+    if(success){
+        const k=weightedPick(LOOT_POOL);const it=ITEMS[k];addItem(k);
+        logEvent("打 开 上 锁 房 间",{},[k]);
+        saveState();
+        const msg="你 费 力 打 开 了 家 里 上 锁 的 房 间。\n房 间 里 地 板 凌 乱。\n尽 头 的 窗 户 微 开。\n一 串 漆 黑 脚 印 从 地 面 延 伸 至 窗 台……\n想 起 来 那 个 人 的 模 样。\n\n你 的 心 微 微 颤 抖。\n沉 默 地 从 门 边 的 篮 子 中 捡 起 了\n\n"+it.icon+" "+it.name+" ×1";
+        openModal("—— 上 锁 房 间 ——",msg,[{label:"重 新 关 闭 房 门",cls:"danger",onClick:onClose}]);
+    }else{
+        logEvent("上 锁 房 间 · 卡 紧",{},[]);
+        saveState();
+        openModal("—— 上 锁 房 间 ——","此 房 间 被 牢 牢 卡 紧，\n无 法 打 开。",[{label:"重 新 关 闭 房 门",cls:"danger",onClick:onClose}]);
+    }
+}
+
+// ======= 睡觉 =======
+function checkDeath(){
+    if(state.health<=0)return{dead:true,reason:"你 的 身 体 终 于 撑 不 住 了。\n伤 势、饥 饿、恐 惧——\n共 同 压 垮 了 你。"};
+    if(state.noFoodDays>=7)return{dead:true,reason:"七 天 了，你 一 点 食 物 也 没 吃。\n这 不 是 末 日——这 是 你 一 个 人 的 终 点。"};
+    return{dead:false};
+}
+function showDeathPage(reason){
+    document.getElementById('day-count-death').textContent=state.day;
+    typewriter(document.getElementById('death-reason'),reason,30);
+    switchPage('page-death');saveState();
+}
+function sleepNewDay(){
+    let msg="";
+    const hasF=state.mealFood!==null,hasW=state.mealWater!==null;
+    if(hasF&&hasW){msg="你 吃 了 一 顿 完 整 的 饭，喝 了 水。\n维 持 了 本 日 所 需。";state.noFoodDays=0;removeItem(state.mealFood);removeItem(state.mealWater)}
+    else if(hasF&&!hasW){applyDelta({health:-3});msg="你 只 吃 了 东 西，没 喝 水。\n身 体 有 点 不 对 劲。\n—— 健 康 -3";state.noFoodDays=0;removeItem(state.mealFood)}
+    else if(!hasF&&hasW){applyDelta({hunger:-5});msg="你 只 喝 了 水，没 吃 东 西。\n肚 子 还 是 饿。\n—— 饱 腹 -5";state.noFoodDays=0;removeItem(state.mealWater)}
+    else{applyDelta({hunger:-5,health:-5});msg="你 什 么 都 没 吃，什 么 都 没 喝。\n这 是 漫 长 的 一 夜。\n—— 饱 腹 -5，健 康 -5";state.noFoodDays++}
+    // 累加两个计数器（没进大楼 / 没街头冒险）
+    state.noBuildDays++;// sleepNewDay 已经在 btn-building 之前调用了，所以这里只累加
+    state.noOutDays++;
+    if(state.hunger<=0){applyDelta({health:-10});msg+="\n\n饱 腹 度 空 了，身 体 遭 2 倍 伤 害（-10 健 康）。"}
+    if(state.sanity<=0){applyDelta({health:-10});msg+="\n\n理 智 空 了，身 体 遭 2 倍 伤 害（-10 健 康）。"}
+    // 药品/娱乐生效
+    if(state.mealMed){
+        const m=ITEMS[state.mealMed];
+        if(m.type==='entertainment'){applyDelta({sanity:5});msg+="\n\n你 玩 了 "+m.icon+m.name+"，心 情 好 转。+5 理 智。"}
+        else{applyDelta({health:5});msg+="\n\n你 用 了 "+m.icon+m.name+"，+5 健 康。"}
+        removeItem(state.mealMed);
+    }
+    state.priceMult=0.9+Math.random()*0.5;
+    if(state.day+1>=5){state.shopItems=generateShopItems();state.shopPurchased=[]}
+    state.day++;state.timeIdx=0;state.mealFood=null;state.mealWater=null;state.mealMed=null;
+    state.roomOrder=shuffleRooms();state.roomEntered=0;state.lastAction=null;state.gameLocked=false;state.enteredRoomIndices=[];
+    state.carried={food1:null,food2:null,weapon:null,tool:null};
+    state.lockedRoomOpened=false;
+    enteredTimeIdx=-1; // 重置时间触发器
+    roomsTimeAdvanced=0; // 重置大楼房间时间计数
+    state.merchantSellUsed=null;
+    const allFoods=Object.keys(ITEMS).filter(k=>ITEMS[k].type==='food_ready');
+    const pickedFoods=shuffleRooms(allFoods).slice(0,2);
+    state.merchantFood1=pickedFoods[0]||null;
+    state.merchantFood2=pickedFoods[1]||null;
+    state.merchantBought=[];
+    state.dailyRecipes=generateDailyRecipes();
+    state.dailyLog=[];
+    returnHomeShownToday=false;
+    skipAuto21Dark=false;
+    const dc=checkDeath();
+    if(dc.dead){showDeathPage(dc.reason+"\n\n你 存 活 了 "+(state.day-1)+" 天。");return}
+    // 21:00 夜晚小故事：理智低 → 受惊吓池，理智高 → 疲惫回忆池
+    const restPool=state.sanity<50?SCARED_REST_STORIES:TIRED_REST_STORIES;
+    const restStory=randomPick(restPool);
+    saveState();
+    openModal("—— 夜 晚 ——",msg+"\n\n"+restStory,[{label:"新 的 一 天",cls:"",onClick:()=>{
+        renderMain();switchPage('page-main');
+        // 检查 4 日没出门/没冒险，延迟弹窗
+        setTimeout(maybeShowNoActionWarning,300);
+    }}]);
+}
+function maybeShowNoActionWarning(){
+    // 最高优先：连续 4 天既没大楼也没街头（两者都没点）→ 全新焦虑弹窗
+    if(state.noBuildDays>=4 && state.noOutDays>=4){
+        applyDelta({sanity:-5});
+        logEvent("你因过度害怕和焦虑，昨晚难以入睡",{sanity:-5});
+        state.noBuildDays=0;state.noOutDays=0;saveState();
+        openModal("你 最 近 好 像 有 点 不 对 劲",
+`你 对 外 面 发 生 的 事 情 感 到 恐 惧。\n你 不 想 到 外 面 去。\n太 危 险 了。\n可 是。\n家 里 的 食 物 越 来 越 少 了。\n你 感 觉 到 非 常 焦 虑…\n\n你 因 过 度 害 怕 和 焦 虑，昨 晚 难 以 入 睡，理 智 度 掉 5 点。`,
+        [{label:"今 日 鼓 起 勇 气 出 去 看 看 吧",cls:"danger",onClick:()=>{closeModal();renderMain();switchPage('page-main')}}]);
+        return;
+    }
+    // 以下保留单独触发（只点了其中一个）
+    if(state.noBuildDays>=4){
+        applyDelta({sanity:-5});
+        logEvent("连 续 未 探 索 大 楼",{sanity:-5});
+        state.noBuildDays=0;saveState();
+        openModal("【家 里 好 像 有 点 不 对 劲】",
+`你 忙 忙 碌 碌 外 出 寻 找 生 存 物 资 及 新 希 望。\n忽 略 了 家 里 的 周 遭 也 是 一 个 危 险 地 带。\n这 天。\n你 发 现 你 布 置 的 简 易 门 档 似 乎 有 被 撬 过 的 痕 迹。\n是 活 人？ 还 是…\n\n你 因 忽 略 居 住 环 境 的 安 全，吓 出 一 身 冷 汗，理 智 度 掉 5 点。`,
+        [{label:"今 日 不 能 再 往 外 跑 了",cls:"danger",onClick:()=>{}}]);
+        return;
+    }
+    if(state.noOutDays>=4){
+        applyDelta({sanity:-5});
+        logEvent("连 续 未 街 头 冒 险",{sanity:-5});
+        state.noOutDays=0;saveState();
+        openModal("【外 面 好 像 有 点 不 对 劲】",
+`你 总 想 着，先 把 家 里 附 近 清 理 出 来。\n可 是 外 面 的 变 化 一 天 一 个 样。\n那 些 东 西 好 像 已 经 再 度 进 化 了。\n这 天。\n你 发 现 你 的 阳 台 门 档 似 乎 有 被 撬 过 的 痕 迹。\n是 活 人？ 还 是…\n\n你 因 忽 略 定 期 观 察 外 面 环 境 的 变 化，阳 台 的 葱 少 了 一 根，理 智 度 掉 5 点。`,
+        [{label:"今 日 得 外 出 看 看 了",cls:"danger",onClick:()=>{}}]);
+    }
+}
+
+// ======= 商店 =======
+function openShop(){
+    if(state.shopItems.length===0){state.shopItems=generateShopItems();state.shopPurchased=[]}
+    openModalRaw("—— 商 店 ——",`我 的 金 币：<span id="shop-gold" style="color:#ffcc00;font-weight:bold">￥${state.gold}</span>\n今 日 物 价：x${state.priceMult.toFixed(2)}`,()=>{
+        const body=document.getElementById('modal-body');const container=document.createElement('div');body.appendChild(container);
+        state.shopItems.forEach(key=>{
+            const it=ITEMS[key];const p=Math.round(it.basePrice*state.priceMult);
+            const bought=state.shopPurchased.includes(key);const ok=!bought&&state.gold>=p;
+            const div=document.createElement('div');div.className='shop-item';
+            div.innerHTML=`<div><div>${it.icon} ${it.name}</div><div class="price">￥ ${p}</div></div><button class="buy-btn" ${ok?'':'disabled'}>${bought?'已购买':(ok?'购 买':'金 币 不 足')}</button>`;
+            if(ok)div.querySelector('.buy-btn').onclick=()=>{
+                applyDelta({gold:-p});addItem(key);state.shopPurchased.push(key);saveState();
+                logEvent("商 店 购 买",{gold:-p},[key]);
+                // 只手动更新金币 DOM，不调 renderMain()（防止重渲染主页面按钮状态）
+                const tg=document.getElementById('top-gold');if(tg)tg.textContent='￥'+state.gold;
+                const sg=document.getElementById('shop-gold');if(sg)sg.textContent='￥'+state.gold;
+                // 刷新商店列表（重新读最新 state.gold 判断每个商品能不能买）
+                openShop();
+            };
+            container.appendChild(div);
+        });
+        const act=document.getElementById('modal-actions');act.innerHTML="";
+        const close=document.createElement('button');close.className='wide-btn ghost';close.textContent="关 闭";close.onclick=closeModal;act.appendChild(close);
+    });
+}
+</script>
+<script id="script-part3">
+/* ======= Canvas 街头冒险小游戏 ======= */
+// 8 个场景，type: 'monster'(怪物30s) | 'gold'(纯金币15s) | 'loot'(物资15s, 可挑选)
+// lootTypes: 该场景会掉落的物资类型（仅 loot 类型场景使用）
+const SHOPS = [
+    {id:"hospital",   name:"医院",       bg:"#1a2a3a", type:"monster", weight:15},
+    {id:"station",    name:"火车站",     bg:"#3a3a1a", type:"monster", weight:15},
+    {id:"street",     name:"大街",       bg:"#222",    type:"monster", weight:15},
+    {id:"bank",       name:"银行",       bg:"#2a2a4a", type:"gold",    weight:11.5},
+    {id:"hardware",   name:"五金店",     bg:"#3a2a1a", type:"loot",    weight:11.5, lootTypes:["tool","part"]},
+    {id:"clinic",     name:"街边小诊所", bg:"#1a3a2a", type:"loot",    weight:8,    lootTypes:["medical","medical_part"]},
+    {id:"convenience",name:"便利店",     bg:"#2a3a2a", type:"loot",    weight:8,    lootTypes:["water_ready","food_ready","food_part"]},
+    {id:"supermarket",name:"超市",       bg:"#3a2a2a", type:"loot",    weight:8,    lootTypes:["water_ready","food_ready","food_part","medical","entertainment","tool","part"]}
+];
+// 按权重随机选店铺
+function pickShop(){
+    const t=SHOPS.reduce((s,x)=>s+x.weight,0);
+    let r=Math.random()*t;
+    for(const s of SHOPS){r-=s.weight;if(r<=0)return s}
+    return SHOPS[0];
+}
+// 从 LOOT_POOL 动态取有效 key 列表
+const LOOT_ITEM_KEYS=LOOT_POOL.map(e=>e.key);
+let gameCanvas, gameCtx, gameRAF, gameTimeLeft, gameScore, gameRunning, gameObjects, gamePlayer, gameLocation, gameMaxItems;
+let gameStats; // {dmgSanity, dmgHealth, itemCount}
+const GAME_WIDTH=440,GAME_HEIGHT=400;
+
+function startGameDown(){
+    // 先切换页面，防止用户反复点击导致多次扣时间
+    switchPage('page-down');
+    // 消耗2节时间（4小时）—— 移到 finalizeGoodStore 末尾推进，防止 18:00/21:00 弹窗提前覆盖游戏界面
+    state.lastAction="out";
+    // 选店铺（按权重）
+    gameLocation=pickShop();
+    document.getElementById('down-location-title').textContent=gameLocation.name.toUpperCase();
+    // 动态设置进入文案
+    const hintTop=document.getElementById('down-hint-top');
+    if(gameLocation.type==='monster'){
+        hintTop.innerHTML='你 来 到 了 '+gameLocation.name+'。<br>气 氛 不 对，似 乎 有 什 么 东 西 正 朝 你 这 里 看 过 来。<br>但 想 着，来 都 来 了…<br>你 进 去 看 看，顺 便 带 两 样 东 西 回 家。';
+    }else{
+        hintTop.textContent='每 探 险 一 次 需 要 4 个 小 时';
+    }
+    // Canvas 先隐藏
+    gameCanvas=document.getElementById('game-canvas');
+    gameCanvas.classList.remove('active');
+    document.getElementById('game-result-text').style.display='none';
+    document.getElementById('btn-game-done').style.display='none';
+    // 检查携带容量：仅 loot 类型场景需要
+    const ALL_SPACE=['cloth_bag','backpack','basket','suitcase'];
+    let hasSpace=false;
+    Object.keys(state.inventory).forEach(k=>{if(ALL_SPACE.includes(k)&&state.inventory[k]>0)hasSpace=true});
+    Object.values(state.carried).forEach(k=>{if(ALL_SPACE.includes(k))hasSpace=true});
+    const MAX_ITEMS=hasSpace?5:2;
+    gameMaxItems=MAX_ITEMS;
+    const loc=gameLocation;
+    // 按 type 决定时间、玩家 UI、场景描述
+    const isMonster=loc.type==='monster';
+    const isGold=loc.type==='gold';
+    const isLoot=loc.type==='loot';
+    gameTimeLeft=isMonster?30:15;
+    const playerUI=isMonster?'😭':'😚';
+    gameScore=0;gameObjects=[];
+    gamePlayer={x:GAME_WIDTH/2-20,y:GAME_HEIGHT-60,w:40,h:40,speed:6};
+    gameStats={dmgSanity:0,dmgHealth:0,itemCount:0,goldGained:0,caughtItems:[]};
+    // 构造场景说明
+    let desc=`你 来 到 了 ${loc.name}。\n\n`;
+    if(isMonster){
+        desc+=`气 氛 不 对，似 乎 有 什 么 东 西 正 朝 你 这 里 看 过 来。\n但 想 着，来 都 来 了…\n你 进 去 看 看，顺 便 带 两 样 东 西 回 家。\n\n你 的 角 色：${playerUI}\n快 速 移 动 躲 避 掉 落 的 怪 物 ！\n（碰 到 怪 物 扣 理 智 -2，健 康 -2）\n\n${gameTimeLeft} 秒 时 间。`;
+    }else if(isGold){
+        desc+=`这 里 应 该 还 有 遗 落 的 金 钱。\n你 四 处 看 了 看，悄 悄 闪 身 进 去。\n\n你 的 角 色：${playerUI}\n快 速 移 动 接 住 掉 落 的 金 币 ！\n（接 到 金 币 加 入 仓 库）\n\n${gameTimeLeft} 秒 时 间。`;
+    }else{
+        // loot 类型：用 openModalRaw 支持空间用具选择
+        const ownedSpace=ALL_SPACE.filter(k=>(state.inventory[k]||0)>0||state.carried[k]);
+        let selectedSpace=ownedSpace.length>0?ownedSpace[0]:null;
+        gameMaxItems=selectedSpace?5:2;
+        openModalRaw(`—— ${loc.name} ——`,"",()=>{
+            const body=document.getElementById('modal-body');
+            const act=document.getElementById('modal-actions');
+            body.innerHTML=`你 来 到 了 ${loc.name}。\n看 起 来 还 安 全。\n你 四 处 看 了 看，悄 悄 闪 身 进 去。\n\n你 的 角 色：${playerUI}\n快 速 移 动 接 住 掉 落 的 物 资 ！`;
+            act.innerHTML="";
+            // 空间用具选择区
+            const box=document.createElement('div');
+            box.style.cssText='margin:12px 0';
+            const label=document.createElement('div');
+            label.textContent='携 带 的 空 间 用 具：';
+            label.style.fontSize='12px';label.style.marginBottom='6px';label.style.color='#ddd';
+            box.appendChild(label);
+            if(ownedSpace.length===0){
+                const noSpace=document.createElement('div');
+                noSpace.textContent='（无） 最 多 带 2 项 物 资';
+                noSpace.style.cssText='font-size:13px;color:#888;padding:6px;background:rgba(255,255,255,0.05);border-radius:4px';
+                box.appendChild(noSpace);
+            }else{
+                const grid=document.createElement('div');
+                grid.style.cssText='display:grid;grid-template-columns:repeat(2,1fr);gap:6px';
+                const spaceBtns={};
+                ownedSpace.forEach(k=>{
+                    const it=ITEMS[k];
+                    const count=state.carried[k]||state.inventory[k]||1;
+                    const btn=document.createElement('button');
+                    btn.style.cssText='padding:8px;font-size:13px;border:2px solid transparent';
+                    btn.innerHTML=`<div style="font-size:21px">${it.icon}</div><div>${it.name}</div><div style="color:#aaa;font-size:12px">×${count}</div>`;
+                    btn.onclick=()=>{
+                        selectedSpace=k;gameMaxItems=5;
+                        Object.values(spaceBtns).forEach(b=>b.style.border='2px solid transparent');
+                        btn.style.border='2px solid #ffcc44';
+                        hint.textContent='已 选：'+it.icon+' '+it.name+'（最 多 带 5 项）';
+                    };
+                    if(k===selectedSpace)btn.style.border='2px solid #ffcc44';
+                    spaceBtns[k]=btn;
+                    grid.appendChild(btn);
+                });
+                box.appendChild(grid);
+                const hint=document.createElement('div');
+                hint.textContent=selectedSpace?'已 选：'+ITEMS[selectedSpace].icon+' '+ITEMS[selectedSpace].name+'（最 多 带 5 项）':'无（最 多 带 2 项）';
+                hint.style.cssText='font-size:13px;color:#aaa;margin-top:6px';
+                box.appendChild(hint);
+            }
+            act.appendChild(box);
+            // 开始/取消按钮
+            const startBtn=document.createElement('button');
+            startBtn.textContent='开 始 冒 险';startBtn.className='wide-btn';
+            startBtn.onclick=()=>{closeModal();startCanvasGame()};
+            act.appendChild(startBtn);
+            const cancelBtn=document.createElement('button');
+            cancelBtn.textContent='取 消 · 回 家';cancelBtn.className='wide-btn ghost';
+            cancelBtn.onclick=()=>{returnHomeShownToday=true;logEvent("街 头 冒 险（"+gameLocation.name+"）\n你 觉 得 太 危 险 了，选 择 先 回 家");closeModal();advanceTime(2);renderMain();switchPage('page-main')};
+            act.appendChild(cancelBtn);
+        });
+    }
+    // monster 和 gold 类型用普通 openModal
+    if(!isLoot){
+        openModal(`—— ${loc.name} ——`,desc,[
+            {label:"开 始 冒 险",cls:"",onClick:()=>{closeModal();startCanvasGame()}},
+            {label:"取 消 · 回 家",cls:"ghost",onClick:()=>{returnHomeShownToday=true;logEvent("街 头 冒 险（"+gameLocation.name+"）\n你 觉 得 太 危 险 了，选 择 先 回 家");closeModal();advanceTime(2);renderMain();switchPage('page-main')}}
+        ]);
+    }
+}
+function startCanvasGame(){
+    // 时间 & lastAction 已在 startGameDown 开头扣过，这里不重复
+    // 开始游戏后，把上方文字改成警示语（怪物场景）或保持默认（金币/物资场景）
+    const hintTop=document.getElementById('down-hint-top');
+    if(gameLocation.type==='monster'){
+        hintTop.textContent='是 它 们，它 们 来 了 ……';
+    }
+    // Canvas 初始化并启动
+    gameCanvas.classList.add('active');
+    gameCtx=gameCanvas.getContext('2d');
+    gameCanvas.width=GAME_WIDTH;gameCanvas.height=GAME_HEIGHT;
+    gameRunning=true;
+    const startBtn=document.getElementById('btn-game-start');
+    if(startBtn){startBtn.disabled=true;startBtn.textContent='探 险 中';}
+    updateGameUI();spawnGameObject();
+    gameLoop();
+    if(gameLoop._timer)clearInterval(gameLoop._timer);
+    gameLoop._timer=setInterval(()=>{
+        gameTimeLeft--;updateGameUI();
+        if(gameTimeLeft<=0)endGame();
+    },1000);
+    gameCanvas.addEventListener('mousemove',handleGameInput);
+    gameCanvas.addEventListener('touchmove',handleGameInput,{passive:false});
+}
+function handleGameInput(e){
+    if(!gameRunning)return;e.preventDefault();
+    const rect=gameCanvas.getBoundingClientRect();
+    const cx=e.touches?e.touches[0].clientX:e.clientX;
+    const x=(cx-rect.left)*(GAME_WIDTH/rect.width);
+    gamePlayer.x=Math.max(0,Math.min(GAME_WIDTH-gamePlayer.w,x-gamePlayer.w/2));
+}
+function spawnGameObject(){
+    if(!gameRunning)return;
+    const obj={y:-30,speed:rand(2,5),w:28,h:28};
+    const type=gameLocation.type;
+    if(type==='monster'){
+        obj.type='monster';obj.icon='🧟';obj.harm=2;
+    }else if(type==='gold'){
+        obj.type='gold';obj.icon='💰';
+    }else{
+        // loot 类型：部分店有金币混入（便利店/超市 25% 金币）
+        const hasGold=(gameLocation.id==='convenience'||gameLocation.id==='supermarket');
+        if(hasGold && Math.random()<0.25){
+            obj.type='gold';obj.icon='💰';
+        }else{
+            obj.type='item';
+            // 从 lootTypes 过滤 LOOT_POOL
+            const pool=LOOT_POOL.filter(lp=>gameLocation.lootTypes.includes(ITEMS[lp.key].type));
+            const k=pool.length>0?pool[Math.floor(Math.random()*pool.length)].key:LOOT_ITEM_KEYS[Math.floor(Math.random()*LOOT_ITEM_KEYS.length)];
+            obj.key=k;obj.icon=ITEMS[k].icon;
+        }
+    }
+    obj.x=rand(10,GAME_WIDTH-40);
+    gameObjects.push(obj);
+    setTimeout(spawnGameObject,rand(400,900));
+}
+// 8 个场景的 Canvas 背景装饰（更丰富的线条+色彩）
+function drawSceneDecor(id,ctx){
+    ctx.lineWidth=1;
+    // === 内部 helper（闭包内，不污染全局） ===
+    function skyline(c){
+        c.fillStyle='rgba(50,50,50,0.55)';
+        const bx=[10,60,110,160,210,260,310,360,410];
+        bx.forEach((x,i)=>{const h=25+((i*41)%60);c.fillRect(x,GAME_HEIGHT-60-h,40,h)});
+    }
+    function bigHouse(c,x,y,w,h,roofColor,wallColor,winColor,label){
+        // 墙
+        c.fillStyle=wallColor;c.fillRect(x,y,w,h);
+        // 屋顶（三角）
+        c.fillStyle=roofColor;
+        c.beginPath();c.moveTo(x,y);c.lineTo(x+w/2,y-h*0.4);c.lineTo(x+w,y);c.closePath();c.fill();
+        // 招牌横条
+        c.fillStyle='rgba(0,0,0,0.55)';
+        c.fillRect(x+w*0.05,y-2,w*0.9,14);
+        c.fillStyle='rgba(255,255,255,0.95)';
+        c.font='bold 10px sans-serif';c.textAlign='center';c.textBaseline='middle';
+        c.fillText(label,x+w/2,y+5);
+        // 窗户 2x3
+        c.fillStyle=winColor;
+        for(let wy=y+h*0.22;wy<y+h-18;wy+=h*0.34){
+            for(let wx=x+w*0.12;wx<x+w-12;wx+=w*0.35){
+                c.fillRect(wx,wy,9,11);
+            }
+        }
+        // 门
+        c.fillStyle='rgba(40,25,10,0.7)';
+        c.fillRect(x+w/2-9,y+h-24,18,24);
+    }
+    function car(c,x,y,color){
+        c.fillStyle=color;
+        c.fillRect(x+4,y,34,13);
+        c.beginPath();c.moveTo(x+9,y);c.lineTo(x+15,y-8);c.lineTo(x+28,y-8);c.lineTo(x+33,y);c.closePath();c.fill();
+        c.fillStyle='rgba(180,220,255,0.55)';
+        c.fillRect(x+12,y-7,6,7);c.fillRect(x+20,y-7,8,7);
+        c.fillStyle='#111';
+        c.beginPath();c.arc(x+11,y+14,4,0,Math.PI*2);c.fill();
+        c.beginPath();c.arc(x+31,y+14,4,0,Math.PI*2);c.fill();
+    }
+    // === 8 个场景 ===
+    switch(id){
+        case 'hospital':
+            skyline(ctx);
+            // 主楼（大！占满屏幕宽度）
+            bigHouse(ctx,30,GAME_HEIGHT-200,GAME_WIDTH-60,140,'rgba(180,200,220,0.75)','rgba(240,245,255,0.3)','rgba(100,200,220,0.7)','医 院');
+            // 巨大红色十字（屋顶上）
+            ctx.fillStyle='rgba(255,70,70,0.9)';
+            ctx.fillRect(GAME_WIDTH/2-15,GAME_HEIGHT-222,30,11);
+            ctx.fillRect(GAME_WIDTH/2-5,GAME_HEIGHT-233,10,33);
+            // 侧楼+病床
+            ctx.strokeStyle='rgba(200,220,240,0.3)';
+            ctx.strokeRect(20,GAME_HEIGHT-70,55,28);
+            ctx.strokeRect(GAME_WIDTH-80,GAME_HEIGHT-80,60,35);
+            ctx.fillStyle='rgba(255,255,255,0.25)';ctx.fillRect(150,GAME_HEIGHT-120,4,80);
+            break;
+        case 'station':
+            skyline(ctx);
+            // 站台
+            ctx.fillStyle='rgba(120,110,90,0.65)';
+            ctx.fillRect(0,GAME_HEIGHT-45,GAME_WIDTH,7);
+            // 双铁轨 + 枕木
+            ctx.strokeStyle='rgba(220,200,160,0.6)';ctx.lineWidth=2;
+            ctx.beginPath();ctx.moveTo(0,GAME_HEIGHT-38);ctx.lineTo(GAME_WIDTH,GAME_HEIGHT-38);ctx.stroke();
+            ctx.beginPath();ctx.moveTo(0,GAME_HEIGHT-28);ctx.lineTo(GAME_WIDTH,GAME_HEIGHT-28);ctx.stroke();
+            ctx.lineWidth=1;
+            ctx.fillStyle='rgba(140,120,90,0.6)';
+            for(let x=5;x<GAME_WIDTH;x+=13)ctx.fillRect(x,GAME_HEIGHT-41,5,16);
+            // 巨大火车头！
+            ctx.fillStyle='rgba(70,70,85,0.85)';
+            ctx.fillRect(100,GAME_HEIGHT-95,110,50);
+            ctx.beginPath();ctx.moveTo(125,GAME_HEIGHT-95);ctx.lineTo(100,GAME_HEIGHT-70);ctx.lineTo(125,GAME_HEIGHT-45);ctx.closePath();ctx.fill();
+            ctx.fillStyle='rgba(55,55,70,0.9)';
+            ctx.fillRect(130,GAME_HEIGHT-125,18,30);
+            ctx.fillStyle='rgba(255,255,255,0.3)';
+            ctx.beginPath();ctx.arc(139,GAME_HEIGHT-132,7,0,Math.PI*2);ctx.fill();
+            ctx.beginPath();ctx.arc(148,GAME_HEIGHT-142,9,0,Math.PI*2);ctx.fill();
+            ctx.fillStyle='rgba(150,200,240,0.75)';
+            ctx.fillRect(170,GAME_HEIGHT-85,32,16);
+            ctx.fillStyle='#111';
+            ctx.beginPath();ctx.arc(130,GAME_HEIGHT-42,9,0,Math.PI*2);ctx.fill();
+            ctx.beginPath();ctx.arc(170,GAME_HEIGHT-42,9,0,Math.PI*2);ctx.fill();
+            ctx.beginPath();ctx.arc(200,GAME_HEIGHT-42,9,0,Math.PI*2);ctx.fill();
+            ctx.beginPath();ctx.arc(220,GAME_HEIGHT-42,9,0,Math.PI*2);ctx.fill();
+            // 候车椅
+            ctx.strokeStyle='rgba(255,255,200,0.3)';
+            ctx.strokeRect(340,GAME_HEIGHT-60,50,14);
+            break;
+        case 'street':
+            skyline(ctx);
+            // 马路（深灰底+黄色虚线）
+            ctx.fillStyle='rgba(25,25,25,0.75)';
+            ctx.fillRect(0,GAME_HEIGHT-50,GAME_WIDTH,30);
+            ctx.fillStyle='rgba(255,220,100,0.55)';
+            for(let x=0;x<GAME_WIDTH;x+=22)ctx.fillRect(x+3,GAME_HEIGHT-36,11,3);
+            // 三辆大汽车！
+            car(ctx,30,GAME_HEIGHT-62,'rgba(220,60,60,0.85)');
+            car(ctx,150,GAME_HEIGHT-62,'rgba(70,130,220,0.85)');
+            car(ctx,290,GAME_HEIGHT-62,'rgba(240,200,50,0.85)');
+            // 路灯
+            ctx.strokeStyle='rgba(255,255,255,0.4)';
+            ctx.beginPath();ctx.moveTo(70,GAME_HEIGHT-50);ctx.lineTo(70,GAME_HEIGHT-110);ctx.stroke();
+            ctx.fillStyle='rgba(255,255,120,0.7)';ctx.beginPath();ctx.arc(70,GAME_HEIGHT-115,8,0,Math.PI*2);ctx.fill();
+            ctx.strokeStyle='rgba(255,255,255,0.4)';
+            ctx.beginPath();ctx.moveTo(360,GAME_HEIGHT-50);ctx.lineTo(360,GAME_HEIGHT-110);ctx.stroke();
+            ctx.fillStyle='rgba(255,255,120,0.7)';ctx.beginPath();ctx.arc(360,GAME_HEIGHT-115,8,0,Math.PI*2);ctx.fill();
+            break;
+        case 'bank':
+            skyline(ctx);
+            // 银行大楼（巨型）
+            bigHouse(ctx,40,GAME_HEIGHT-210,GAME_WIDTH-80,135,'rgba(255,215,0,0.75)','rgba(80,80,110,0.45)','rgba(255,215,0,0.7)','银 行');
+            // 希腊柱（更粗更大）
+            ctx.fillStyle='rgba(220,210,170,0.75)';
+            for(let x=60;x<GAME_WIDTH-50;x+=42)ctx.fillRect(x,GAME_HEIGHT-210,16,135);
+            // 三角金色屋顶（独立绘制，覆盖 bigHouse 的小三角）
+            ctx.fillStyle='rgba(255,215,0,0.85)';
+            ctx.beginPath();ctx.moveTo(28,GAME_HEIGHT-210);ctx.lineTo(GAME_WIDTH/2,GAME_HEIGHT-260);ctx.lineTo(GAME_WIDTH-28,GAME_HEIGHT-210);ctx.closePath();ctx.fill();
+            // 金库门（两个）
+            ctx.strokeStyle='rgba(255,215,0,0.7)';ctx.lineWidth=2;
+            ctx.strokeRect(70,GAME_HEIGHT-90,45,45);
+            ctx.beginPath();ctx.arc(92,GAME_HEIGHT-68,10,0,Math.PI*2);ctx.stroke();
+            ctx.strokeRect(GAME_WIDTH-115,GAME_HEIGHT-90,45,45);
+            ctx.beginPath();ctx.arc(GAME_WIDTH-92,GAME_HEIGHT-68,10,0,Math.PI*2);ctx.stroke();
+            ctx.lineWidth=1;
+            break;
+        case 'supermarket':
+            skyline(ctx);
+            // 超市大仓库（平顶）
+            ctx.fillStyle='rgba(140,140,120,0.55)';
+            ctx.fillRect(15,GAME_HEIGHT-190,GAME_WIDTH-30,125);
+            ctx.fillStyle='rgba(100,100,85,0.7)';
+            ctx.fillRect(10,GAME_HEIGHT-195,GAME_WIDTH-20,10);
+            // 巨大红招牌
+            ctx.fillStyle='rgba(255,60,60,0.9)';
+            ctx.fillRect(GAME_WIDTH/2-55,GAME_HEIGHT-185,110,22);
+            ctx.fillStyle='rgba(255,255,255,1)';
+            ctx.font='bold 14px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+            ctx.fillText('超 市',GAME_WIDTH/2,GAME_HEIGHT-174);
+            // 大玻璃窗户（一排）
+            ctx.fillStyle='rgba(180,220,255,0.4)';
+            for(let x=30;x<GAME_WIDTH-30;x+=40)ctx.fillRect(x,GAME_HEIGHT-130,32,25);
+            // 大购物车
+            ctx.strokeStyle='rgba(255,255,255,0.7)';ctx.lineWidth=2;
+            ctx.strokeRect(55,GAME_HEIGHT-65,40,22);
+            ctx.beginPath();ctx.moveTo(85,GAME_HEIGHT-65);ctx.lineTo(92,GAME_HEIGHT-78);ctx.stroke();ctx.lineWidth=1;
+            ctx.fillStyle='#222';
+            ctx.beginPath();ctx.arc(62,GAME_HEIGHT-42,5,0,Math.PI*2);ctx.fill();
+            ctx.beginPath();ctx.arc(92,GAME_HEIGHT-42,5,0,Math.PI*2);ctx.fill();
+            break;
+        case 'convenience':
+            skyline(ctx);
+            // 便利店（明亮小房子）
+            bigHouse(ctx,50,GAME_HEIGHT-185,GAME_WIDTH-100,115,'rgba(255,160,60,0.8)','rgba(255,210,150,0.5)','rgba(180,240,255,0.85)','便 利 店');
+            // 大玻璃橱窗（招牌下透明）
+            ctx.fillStyle='rgba(180,240,255,0.5)';
+            ctx.fillRect(GAME_WIDTH/2-35,GAME_HEIGHT-170,70,50);
+            // 冰柜/自动门
+            ctx.strokeStyle='rgba(100,200,255,0.55)';ctx.lineWidth=2;
+            ctx.strokeRect(GAME_WIDTH-70,GAME_HEIGHT-95,40,55);
+            ctx.fillStyle='rgba(120,255,200,0.35)';
+            ctx.fillRect(GAME_WIDTH/2-13,GAME_HEIGHT-75,26,40);
+            ctx.lineWidth=1;
+            break;
+        case 'hardware':
+            skyline(ctx);
+            // 五金店（橙色大房子）
+            bigHouse(ctx,40,GAME_HEIGHT-200,GAME_WIDTH-80,125,'rgba(180,90,40,0.85)','rgba(200,130,80,0.55)','rgba(255,220,150,0.75)','五 金 店');
+            // 工具挂钩墙（底层）
+            ctx.strokeStyle='rgba(255,255,255,0.35)';
+            for(let x=55;x<GAME_WIDTH-45;x+=28){
+                ctx.beginPath();ctx.arc(x,GAME_HEIGHT-60,3,0,Math.PI,true);ctx.stroke();
+            }
+            // 工具图标（大！）
+            ctx.fillStyle='rgba(255,255,255,0.8)';
+            ctx.font='18px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+            ctx.fillText('🔧',85,GAME_HEIGHT-50);
+            ctx.fillText('🔨',155,GAME_HEIGHT-50);
+            ctx.fillText('⚙',225,GAME_HEIGHT-50);
+            ctx.fillText('🔩',295,GAME_HEIGHT-50);
+            break;
+        case 'clinic':
+            skyline(ctx);
+            // 小诊所（绿色房子）
+            bigHouse(ctx,60,GAME_HEIGHT-190,GAME_WIDTH-120,120,'rgba(40,120,70,0.85)','rgba(80,160,110,0.55)','rgba(180,255,200,0.8)','诊 所');
+            // 巨大绿色十字（屋顶上）
+            ctx.fillStyle='rgba(100,255,150,0.95)';
+            ctx.fillRect(GAME_WIDTH/2-12,GAME_HEIGHT-215,24,9);
+            ctx.fillRect(GAME_WIDTH/2-3,GAME_HEIGHT-223,6,25);
+            // 药柜网格（底层墙）
+            ctx.strokeStyle='rgba(200,255,200,0.4)';
+            ctx.lineWidth=1;
+            for(let y=GAME_HEIGHT-125;y<GAME_HEIGHT-60;y+=20){
+                for(let x=80;x<GAME_WIDTH-90;x+=38){
+                    ctx.strokeRect(x,y,28,13);
+                }
+            }
+            break;
+    }
+}
+function gameLoop(){
+    if(!gameRunning)return;
+    const isMonster=gameLocation.type==='monster';
+    // 背景
+    gameCtx.fillStyle=gameLocation.bg;gameCtx.fillRect(0,0,GAME_WIDTH,GAME_HEIGHT);
+    // 场景装饰线条（简单描绘）
+    drawSceneDecor(gameLocation.id,gameCtx);
+    // 地面线
+    gameCtx.fillStyle="#000";gameCtx.fillRect(0,GAME_HEIGHT-20,GAME_WIDTH,2);
+    // 画玩家（纯图标，无白底）
+    gameCtx.font="26px sans-serif";gameCtx.textAlign="center";
+    const playerIcon=isMonster?'😭':'😚';
+    gameCtx.fillText(playerIcon,gamePlayer.x+gamePlayer.w/2,gamePlayer.y+gamePlayer.h*0.8);
+    // 更新 & 画掉落物（无底色，纯图标）
+    for(let i=gameObjects.length-1;i>=0;i--){
+        const o=gameObjects[i];o.y+=o.speed;
+        if(o.y>GAME_HEIGHT){gameObjects.splice(i,1);continue}
+        gameCtx.font="24px sans-serif";
+        gameCtx.textAlign="center";
+        gameCtx.fillText(o.icon,o.x+o.w/2,o.y+o.h*0.75);
+        // 碰撞
+        if(o.x<gamePlayer.x+gamePlayer.w&&o.x+o.w>gamePlayer.x&&o.y<gamePlayer.y+gamePlayer.h&&o.y+o.h>gamePlayer.y){
+            if(o.type==='gold'){gameScore+=10;applyDelta({gold:10});gameStats.goldGained+=10}
+            else if(o.type==='item'){gameScore+=15;gameStats.itemCount++;gameStats.caughtItems.push(o.key)}
+            else if(o.type==='monster'){applyDelta({sanity:-2,health:-2});gameStats.dmgSanity+=2;gameStats.dmgHealth+=2}
+            gameObjects.splice(i,1);
+        }
+    }
+    gameRAF=requestAnimationFrame(gameLoop);
+}
+function updateGameUI(){
+    document.getElementById('game-time').textContent=gameTimeLeft+"s";
+}
+function endGame(){
+    gameRunning=false;clearInterval(gameLoop._timer);
+    if(gameRAF)cancelAnimationFrame(gameRAF);
+    gameCanvas.removeEventListener('mousemove',handleGameInput);
+    gameCanvas.removeEventListener('touchmove',handleGameInput);
+    // 恢复按钮
+    const startBtn=document.getElementById('btn-game-start');
+    if(startBtn){startBtn.disabled=true;startBtn.textContent='结 束 冒 险';}
+    // 清屏
+    gameCtx.fillStyle=gameLocation.bg;gameCtx.fillRect(0,0,GAME_WIDTH,GAME_HEIGHT);
+    const loc=gameLocation;
+    const dc=checkDeath();
+    if(dc.dead){
+        let msg="你 倒 下 了……\n\n"+dc.reason;
+        document.getElementById('down-location-title').textContent="街 头 冒 险";
+        document.getElementById('game-result-text').style.display='block';
+        document.getElementById('game-result-text').textContent=msg;
+        document.getElementById('btn-game-done').style.display='none';
+        logEvent("街 头 冒 险 死 亡（"+loc.name+"）",{sanity:-gameStats.dmgSanity,health:-gameStats.dmgHealth});
+        setTimeout(()=>showDeathPage(dc.reason+"\n\n你存活了 "+state.day+" 天。"),1500);
+        return;
+    }
+    // === 统一 modal 结算 ===
+    if(loc.type==='monster'){
+        // 怪物场景：扣理智健康 + 随机 2 项物资 → modal
+        const deltas={sanity:-gameStats.dmgSanity,health:-gameStats.dmgHealth,gold:gameStats.goldGained};
+        // 随机赠送 2 项物资
+        const bonus=[];
+        for(let i=0;i<2;i++){const k=weightedPick(LOOT_POOL);bonus.push(k);addItem(k)}
+        logEvent("街 头 冒 险（"+loc.name+"）",deltas,bonus);
+        saveState();
+        const list=bonus.map(k=>`${ITEMS[k].icon} ${ITEMS[k].name}`).join('、');
+        openModal("—— 街 头 冒 险 · 结 算 ——",`你 逃 离 了 ${loc.name}。\n那 里 太 危 险 了……\n\n扣：理 智 -${gameStats.dmgSanity}，健 康 -${gameStats.dmgHealth}\n\n逃 脱 时 你 顺 手 捡 到 了：\n${list}`,[
+            {label:"回 到 客 厅 休 整",cls:"",onClick:()=>{
+                if(state.timeIdx>=TIME_SLOTS.length-2){state.gameLocked=true}
+                renderMain();switchPage('page-main');
+            }}
+        ]);
+    }else if(loc.type==='gold'){
+        // 纯金币场景
+        const deltas={sanity:-gameStats.dmgSanity,health:-gameStats.dmgHealth,gold:gameStats.goldGained};
+        logEvent("街 头 冒 险（"+loc.name+"）",deltas);
+        saveState();
+        openModal("—— 街 头 冒 险 · 结 算 ——",`你 从 ${loc.name} 带 回 了 金 币。\n\n金 币 ￥${gameStats.goldGained}`,[
+            {label:"回 到 客 厅 休 整",cls:"",onClick:()=>{
+                if(state.timeIdx>=TIME_SLOTS.length-2){state.gameLocked=true}
+                renderMain();switchPage('page-main');
+            }}
+        ]);
+    }else{
+        // loot 类型：有物资就进入挑选，没有直接按空处理
+        setTimeout(()=>showItemPickModal(),100);
+    }
+}
+function showItemPickModal(){
+    // loot 类型如果完全没接到物资（只接到金币也算），跳过挑选直接结算
+    if(gameStats.caughtItems.length===0){
+        finalizeGoodStore([]);
+        return;
+    }
+    // 去重 + 统计数量
+    const counts={};
+    gameStats.caughtItems.forEach(k=>counts[k]=(counts[k]||0)+1);
+    const uniq=Object.keys(counts);
+    let picked=[];
+    const render=()=>{
+        const body=document.getElementById('modal-body');
+        const act=document.getElementById('modal-actions');
+        let pickedText="（无）";
+        if(picked.length>0){
+            const pickedCounts={};
+            picked.forEach(k=>pickedCounts[k]=(pickedCounts[k]||0)+1);
+            pickedText=Object.keys(pickedCounts).map(k=>ITEMS[k].icon+" "+ITEMS[k].name+"×"+pickedCounts[k]).join("  ");
+        }
+        body.innerHTML=`你 在 ${gameLocation.name} 接 到 了 ${gameStats.itemCount} 项 物 资。\n\n你 的 背 包 最 多 带 ${gameMaxItems} 项。\n\n已 选 ${picked.length}/${gameMaxItems}：${pickedText}\n\n—— 可 选 物 资（点 击 +1）——`;
+        act.innerHTML="";
+        // 可选择的物资按钮（uniq）
+        const grid=document.createElement('div');
+        grid.style.cssText='display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:10px 0';
+        uniq.forEach(k=>{
+            const it=ITEMS[k];
+            const cur=picked.filter(x=>x===k).length;
+            const remain=counts[k]-cur;
+            const btn=document.createElement('button');
+            btn.style.cssText='padding:8px 4px;font-size:13px;';
+            btn.innerHTML=`<div style="font-size:19px">${it.icon}</div><div>${it.name}×${cur}/${counts[k]}</div>`;
+            btn.disabled=remain===0||picked.length>=gameMaxItems;
+            btn.onclick=()=>{
+                if(picked.length<gameMaxItems && cur<counts[k]){
+                    picked.push(k);
+                    render();
+                }
+            };
+            grid.appendChild(btn);
+        });
+        act.appendChild(grid);
+        // 已选物品——点击 -1（取消）
+        if(picked.length>0){
+            const pickedCounts={};
+            picked.forEach(k=>pickedCounts[k]=(pickedCounts[k]||0)+1);
+            const cancelRow=document.createElement('div');
+            cancelRow.style.cssText='margin:8px 0';
+            const label=document.createElement('div');
+            label.textContent='—— 已 选（点 击 取 消 1 个）——';
+            label.style.fontSize='12px';label.style.marginBottom='4px';label.style.color='#aaa';
+            cancelRow.appendChild(label);
+            const cancelGrid=document.createElement('div');
+            cancelGrid.style.cssText='display:flex;flex-wrap:wrap;gap:6px';
+            Object.keys(pickedCounts).forEach(k=>{
+                const it=ITEMS[k];
+                const btn=document.createElement('button');
+                btn.style.cssText='padding:4px 8px;font-size:13px;background:rgba(220,80,80,0.15);border:1px solid rgba(220,80,80,0.5)';
+                btn.innerHTML=`❌ ${it.icon}${it.name}×${pickedCounts[k]}`;
+                btn.onclick=()=>{
+                    const idx=picked.lastIndexOf(k);
+                    if(idx>=0){picked.splice(idx,1);render()}
+                };
+                cancelGrid.appendChild(btn);
+            });
+            cancelRow.appendChild(cancelGrid);
+            act.appendChild(cancelRow);
+        }
+        if(picked.length>0){
+            const confirmBtn=document.createElement('button');
+            confirmBtn.textContent=`带 回 ${picked.length} 项`;
+            confirmBtn.className='wide-btn';
+            confirmBtn.style.marginTop='8px';
+            confirmBtn.onclick=()=>{
+                picked.forEach(k=>addItem(k));
+                closeModal();
+                finalizeGoodStore(picked);
+            };
+            act.appendChild(confirmBtn);
+        }
+        const skipBtn=document.createElement('button');
+        skipBtn.textContent='什 么 都 不 带';
+        skipBtn.className='wide-btn ghost';
+        skipBtn.style.marginTop='4px';
+        skipBtn.onclick=()=>{closeModal();finalizeGoodStore([])};
+        act.appendChild(skipBtn);
+    };
+    openModalRaw(`—— 选 择 物 资 ——`,"",render);
+}
+function finalizeGoodStore(picked){
+    picked=picked||[];
+    // loot 场景不生成怪物，dmgSanity/dmgHealth 都是 0，扣值为 0
+    const deltas={sanity:-gameStats.dmgSanity,health:-gameStats.dmgHealth,gold:gameStats.goldGained};
+    applyDelta(deltas);
+    logEvent("街 头 冒 险（"+gameLocation.name+"）",deltas,picked.length>0?picked:null);
+    // 生成榜单：去重 + 统计数量
+    const counts={};
+    picked.forEach(k=>counts[k]=(counts[k]||0)+1);
+    const list=Object.keys(counts).map(k=>{
+        const it=ITEMS[k];
+        return `  ${it.icon} ${it.name} ×${counts[k]}`;
+    }).join('\n');
+    const goldText=gameStats.goldGained>0?`\n\n金 币 ￥${gameStats.goldGained}`:'';
+    let body;
+    if(picked.length>0){
+        body=`你 从 ${gameLocation.name} 带 回 了 以 下 ${picked.length} 项 物 资：\n\n${list}${goldText}`;
+    }else{
+        body=`你 从 ${gameLocation.name} 没 带 回 任 何 物 资。${goldText}`;
+    }
+    // 时间推进放在游戏流程结束后（防止 18:00/21:00 弹窗提前覆盖游戏界面）
+    advanceTime(2);
+    saveState();
+    openModal("—— 街 头 冒 险 · 结 算 ——",body,[{label:"回 到 客 厅 休 整",cls:"",onClick:()=>{
+        renderMain();switchPage('page-main');
+    }}]);
+}
+
+// ======= 事件绑定 & 初始化 =======
+document.addEventListener('click',e=>{
+    const l=e.target.closest('[data-back]');if(!l)return;
+    const t=l.getAttribute('data-back');returnHomeShownToday=false;
+    if(t==='main'){renderMain();switchPage('page-main')}
+    if(t==='out'){renderOutPage();switchPage('page-out')}
+});
+document.getElementById('btn-home').addEventListener('click',()=>{state.lastAction="home";saveState();renderHomePage()});
+document.getElementById('btn-locked-room').addEventListener('click',openLockedRoom);
+document.getElementById('btn-out').addEventListener('click',()=>{state.noOutDays=0;saveState();renderOutPage()});
+document.getElementById('btn-sleep').addEventListener('click',sleepNewDay);
+document.getElementById('btn-building').addEventListener('click',()=>{state.noBuildDays=0;saveState();returnHomeShownToday=false;renderBuildingPage()});
+document.getElementById('btn-down').addEventListener('click',()=>{
+    returnHomeShownToday=false;
+    startGameDown();
+});
+document.getElementById('btn-back-home-early').addEventListener('click',()=>{
+    // 离开大楼直接回首页，时间已由 renderBuildingPage 按房间数推进
+    renderMain();switchPage('page-main')
+});
+document.getElementById('btn-go-craft')?.addEventListener('click',renderCraftPage);
+document.getElementById('btn-clues')?.addEventListener('click',showClues);
+document.getElementById('btn-all-recipes')?.addEventListener('click',showAllRecipesTable);
+document.getElementById('btn-craft-close')?.addEventListener('click',renderHomePage);
+document.getElementById('btn-game-done').addEventListener('click',()=>{
+    if(state.timeIdx>=TIME_SLOTS.length-2){state.gameLocked=true}
+    renderMain();switchPage('page-main');
+});
+document.getElementById('btn-game-start').addEventListener('click',()=>{
+    // Canvas 页面上的按钮：只有游戏没运行时才允许进入
+    // 但游戏结束后按钮已 disabled（显示"冒险结束"），必须回首页重选
+    if(gameRunning){return;}
+    if(!gameRunning && document.getElementById('btn-game-start').disabled){return;}
+    // 清除旧的 Canvas
+    const c=document.getElementById('game-canvas');c.classList.remove('active');
+    const res=document.getElementById('game-result-text');res.style.display='none';
+    const done=document.getElementById('btn-game-done');done.style.display='none';
+    // 重新选店 + 扣时间
+    startGameDown();
+});
+document.getElementById('btn-help')?.addEventListener('click',()=>{
+    openModalRaw("—— 设 置 ——",
+    `<div style="display:flex;align-items:center;justify-content:space-between;width:100%">操 作：<button id="modal-music-btn" style="padding:4px 10px;background:#222;border:1px solid #444;color:#ccc;border-radius:4px;cursor:pointer;font-size:12px">🎵：${MUSIC_STATE.enabled?'🔊':'🔇'}</button></div>`,()=>{
+        document.getElementById('modal-music-btn').onclick=()=>{
+            setBgmEnabled(!MUSIC_STATE.enabled);
+            const btn=document.getElementById('modal-music-btn');
+            if(btn)btn.textContent='🎵：'+(MUSIC_STATE.enabled?'🔊':'🔇');
+        };
+        const act=document.getElementById('modal-actions');act.innerHTML="";
+        const mk=(label,cls,onClick)=>{const b=document.createElement('button');b.className='wide-btn'+(cls?' '+cls:'');b.textContent=label;b.onclick=onClick;act.appendChild(b)};
+        mk("🏠 回 到 客 厅","",()=>{closeModal();renderMain();switchPage('page-main')});
+        // 分割线
+        const hr=document.createElement('div');hr.style.cssText='width:100%;height:1px;background:#333;margin:6px 0';act.appendChild(hr);
+        mk("💾 手 动 存 档","ghost",()=>{saveState();closeModal();openModal("—— 存 档 ——","游 戏 进 度 已 保 存。\n\n下次 打 开 游 戏 会 自 动 恢 复。",[{label:"好"}])});
+        mk("♻ 重 新 开 始","ghost",()=>{closeModal();openModal("—— 重 新 开 始 ——","确 定 要 放 弃 当 前 进 度，重 新 开 始 游 戏 吗？\n\n（存 档 将 被 清 空）",[
+            {label:"重 新 开 始",cls:"",onClick:()=>{newGame();returnHomeShownToday=false;renderMain();switchPage('page-main')}} ,
+            {label:"取 消",cls:"ghost"}
+        ])});
+    });
+});
+
+// 死亡页重新开始按钮
+document.getElementById('btn-restart')?.addEventListener('click',()=>{newGame();returnHomeShownToday=false;renderMain();switchPage('page-main')});
+
+// 初始化
+(function init(){
+    const must=['day','hunger','sanity','health','gold','inventory','timeIdx','carried'];
+    let need=false;
+    if(!state)need=true;
+    else must.forEach(k=>{if(state[k]===undefined)need=true});
+    // 旧的 v3 存档 carried 可能是数组，修复为对象
+    if(state && state.carried && Array.isArray(state.carried)){
+        const arr=state.carried;
+        state.carried={food1:arr[0]||null,food2:arr[1]||null,weapon:arr[2]||null,tool:arr[3]||null};
+    }
+    // 新字段兜底
+    if(state){
+        ['gameLocked','shopItems','shopPurchased','friendName','priceMult','mealMed','dailyRecipes','roomEntered','lastAction','dailyLog','rescueShown','lockedRoomOpened','clues','enteredRoomIndices','noBuildDays','noOutDays','merchantSellUsed','merchantFood1','merchantFood2','merchantBought'].forEach(k=>{if(state[k]===undefined)state[k]=defaultState[k]});
+        // 商人食物：null 也视为未初始化，立即随机生成（不要等到 sleepNewDay）
+        if(!state.merchantFood1||!state.merchantFood2){
+            const allFoods=Object.keys(ITEMS).filter(k=>ITEMS[k].type==='food_ready');
+            const picked=shuffleRooms(allFoods).slice(0,2);
+            state.merchantFood1=picked[0]||null;
+            state.merchantFood2=picked[1]||null;
+            state.merchantBought=[];
+        }
+        // 旧存档清理：删除不存在于新 ITEMS 的 key
+        const validKeys=new Set(Object.keys(ITEMS));
+        Object.keys(state.inventory).forEach(k=>{if(!validKeys.has(k))delete state.inventory[k]});
+        // 清理 carried / mealFood / mealWater / mealMed
+        ['food1','food2','weapon','tool'].forEach(sk=>{if(state.carried[sk]&&!validKeys.has(state.carried[sk]))state.carried[sk]=null});
+        if(state.mealFood&&!validKeys.has(state.mealFood))state.mealFood=null;
+        if(state.mealWater&&!validKeys.has(state.mealWater))state.mealWater=null;
+        if(state.mealMed&&!validKeys.has(state.mealMed))state.mealMed=null;
+        // roomOrder 检查：必须是4种不同类型
+        if(!state.roomOrder||state.roomOrder.length!==4||new Set(state.roomOrder).size!==4)state.roomOrder=shuffleRooms();
+        // dailyRecipes 兜底
+        if(!state.dailyRecipes||state.dailyRecipes.length!==8)state.dailyRecipes=generateDailyRecipes();
+    }
+    
+    if(need){
+        newGame();
+        openModal("—— 末 日 活 下 来 ——",
+            "欢 迎 来 到 末 日。\n\n你 的 初 始 物 资 已 随 机 派 发。\n你 有 ￥500。\n你 的 饱 腹 / 理 智 / 健 康 都 是 100。\n\n第 5 天 起 开 启 商 店。\n每 天 合 成 配 方 会 刷 新。\n祝 你 好 运。",
+            [{label:"开 始 游 戏",cls:"",onClick:()=>{renderMain();}}]);
+    }else{
+        renderMain();
+    }
+    // 重置模块级时间变量（必须在 need 分支之后，此时 state 已由 newGame 或 localStorage 恢复完毕）
+    roomsTimeAdvanced = state.enteredRoomIndices ? state.enteredRoomIndices.length : 0;
+    enteredTimeIdx = -1;
+    returnHomeShownToday = false;
+    skipAuto21Dark = false;
+    initBgm();  // 初始化背景音乐（默认关闭，感叹号页手动开启）
+    // ===== 临时演示入口：预览地址加 ?demo=death 直接查看死亡页（演示后删除）=====
+    if(new URLSearchParams(location.search).get('demo')==='death'){
+        showDeathPage("你 的 身 体 终 于 撑 不 住 了。\n伤 势、饥 饿、恐 惧——\n共 同 压 垮 了 你。\n\n你 存 活 了 "+(state.day-1)+" 天。");
+    }
+})();
+</script>
+
+</body>
+</html>
