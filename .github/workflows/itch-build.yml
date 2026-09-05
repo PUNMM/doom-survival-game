@@ -1,0 +1,107 @@
+# ============================================================================
+# 末日活下来 — itch.io 自动打包 & 发布工作流
+# ============================================================================
+# 功能：
+#   1. 每次 push 到 main 分支，自动生成 itch.io 可直接上传的 zip 包
+#   2. zip 包结构正确（根目录有 index.html，无套娃文件夹）
+#   3. 产物作为 GitHub Artifact 可下载（Actions 页面点击即可下载）
+#   4. 可选：配置 BUTLER_API_KEY 后自动推送到 itch.io
+#
+# 使用方式：
+#   - 基础版（只打包）：无需任何配置，push 到 main 即可
+#   - 自动发布版：在 GitHub Settings → Secrets and variables → Actions
+#     添加 BUTLER_API_KEY = 你的 itch.io API Key
+#     然后手动触发 workflow_dispatch 或 push 到 main
+# ============================================================================
+
+name: Build for itch.io
+
+# 触发条件
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:  # 支持在 Actions 页面手动点击运行
+
+jobs:
+  build:
+    name: 打包 itch.io Release
+    runs-on: ubuntu-latest
+
+    steps:
+      # ---- Step 1: 检出代码 ----
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ---- Step 2: 创建 index.html（itch.io 强制要求入口文件叫这个名字）----
+      - name: Create index.html entry point
+        run: |
+          if [ -f "doomsday-survival.html" ]; then
+            cp doomsday-survival.html index.html
+            echo "✅ index.html 已从 doomsday-survival.html 创建"
+          elif [ -f "index.html" ]; then
+            echo "✅ index.html 已存在，跳过复制"
+          else
+            echo "❌ 找不到入口文件！" && exit 1
+          fi
+
+      # ---- Step 3: 验证资源文件完整性 ----
+      - name: Verify required files
+        run: |
+          errors=0
+          [ -f "index.html" ] || { echo "❌ index.html 缺失"; errors=1; }
+          [ -f "bgm-home.mp3" ] || { echo "❌ bgm-home.mp3 缺失"; errors=1; }
+          [ -f "bgm-explore.mp3" ] || { echo "❌ bgm-explore.mp3 缺失"; errors=1; }
+          if [ $errors -eq 0 ]; then
+            echo "✅ 所有必需文件检查通过"
+            echo "   index.html: $(wc -c < index.html) bytes"
+            echo "   bgm-home.mp3: $(wc -c < bgm-home.mp3) bytes"
+            echo "   bgm-explore.mp3: $(wc -c < bgm-explore.mp3) bytes"
+          else
+            echo "❌ 有文件缺失，请检查仓库" && exit 1
+          fi
+
+      # ---- Step 4: 打包（无套娃文件夹，根目录直接可见 index.html）----
+      - name: Create itch.io zip package
+        run: |
+          # 进入仓库根目录打包，确保 index.html 在 zip 根目录
+          cd "$GITHUB_WORKSPACE"
+          zip -r itch-build.zip \
+            index.html \
+            bgm-home.mp3 \
+            bgm-explore.mp3 \
+            images/ \
+            -x ".*" "__MACOSX/*" "*.DS_Store" ".git/*" ".github/*"
+          echo ""
+          echo "📦 打包完成，zip 内容："
+          unzip -l itch-build.zip
+          echo ""
+          echo "📏 压缩包大小：$(du -h itch-build.zip | cut -f1)"
+
+      # ---- Step 5: 上传为 GitHub Artifact（Actions 页面可下载）----
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: itch-build
+          path: itch-build.zip
+          if-no-files-found: error
+          # 保留 7 天，足够下载；长期版本用下面的 Release 方式
+          retention-days: 7
+
+      # ---- Step 6: 可选 — 自动推送到 itch.io（需要配置 API Key）----
+      # 如果在 GitHub Secrets 中设置了 BUTLER_API_KEY，此步骤会自动执行
+      # 未设置则跳过，不会报错
+      - name: Deploy to itch.io (optional)
+        if: env.BUTLER_API_KEY != ''
+        env:
+          BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
+          # 把下面改成你自己的 itch.io 用户名和游戏 slug
+          ITCH_USER: PUNMM
+          ITCH_GAME: doom-survival-game
+          ITCH_CHANNEL: web  # 渠道名，itch.io 后台可见
+        run: |
+          echo "🚀 开始推送到 itch.io..."
+          mkdir -p ~/.butler
+          butler --version || curl -L https://itch.io/butler.sh | bash
+          butler push itch-build.zip "${ITCH_USER}/${ITCH_GAME}:${ITCH_CHANNEL}" \
+            --userversion="${GITHUB_SHA::7}"
+          echo "✅ 推送成功！访问 https://${ITCH_USER}.itch.io/${ITCH_GAME}"

@@ -9,6 +9,10 @@ node_modules/
 *.bak_*
 doomsday-save-backup-*.json
 
+# itch.io 打包临时文件（GitHub Actions 会自动生成）
+itch-build.zip
+index.html
+
 # 编辑器配置
 .vscode/
 .idea/
