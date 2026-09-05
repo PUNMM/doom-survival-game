@@ -39,11 +39,11 @@
 
 ## 📸 游戏截图
 
-![封面](images/cover.png)
+![封面](images/cover.jpg)
 
-![截图 1](images/Cover2.png)
+![截图 1](images/Cover2.jpg)
 
-![截图 2](images/Cover3.png)
+![截图 2](images/Cover3.jpg)
 
 ## 📄 许可证
 
