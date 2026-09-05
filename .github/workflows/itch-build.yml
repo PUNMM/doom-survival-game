@@ -88,27 +88,36 @@ jobs:
           retention-days: 7
 
       # ---- Step 6: 可选 — 自动推送到 itch.io（需要配置 API Key）----
-      # 如果在 GitHub Secrets 中设置了 BUTLER_API_KEY，此步骤会自动执行
-      # 未设置则跳过，不会报错
-      - name: Install butler
-        if: ${{ secrets.BUTLER_API_KEY != '' }}
-        run: |
-          # 下载 butler（itch.io 官方命令行工具）
-          curl -sSL https://github.com/itchio/butler/releases/download/v17.14.0/butler-linux-amd64 -o butler
-          chmod +x butler
-          sudo mv butler /usr/local/bin/butler
-          butler --version
-
+      # 在 GitHub Settings → Secrets → Actions 中添加 BUTLER_API_KEY 后自动执行
+      # 未配置则自动跳过，配置了但推送失败也不会影响打包产物
       - name: Deploy to itch.io (optional)
-        if: ${{ secrets.BUTLER_API_KEY != '' }}
+        continue-on-error: true
         env:
           BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
-          # 把下面改成你自己的 itch.io 用户名和游戏 slug
           ITCH_USER: PUNMM
           ITCH_GAME: doom-survival-game
-          ITCH_CHANNEL: web  # 渠道名，itch.io 后台可见
+          ITCH_CHANNEL: web
         run: |
-          echo "🚀 开始推送到 itch.io..."
-          butler push itch-build.zip "${ITCH_USER}/${ITCH_GAME}:${ITCH_CHANNEL}" \
+          # ---- 用 shell 判断 API Key 是否存在 ----
+          if [ -z "$BUTLER_API_KEY" ]; then
+            echo "⏭️ 未配置 BUTLER_API_KEY，跳过 itch.io 自动推送"
+            exit 0
+          fi
+
+          echo "🚀 检测到 BUTLER_API_KEY，开始自动推送..."
+
+          # ---- 安装 butler ----
+          curl -sSL -o butler https://github.com/itchio/butler/releases/download/v17.14.0/butler-linux-amd64
+          if [ ! -f butler ]; then
+            echo "❌ butler 下载失败"
+            exit 1
+          fi
+          chmod +x butler
+          ./butler --version
+          echo "✅ butler 安装完成"
+
+          # ---- 推送 ----
+          echo "📤 正在推送 ${ITCH_USER}/${ITCH_GAME}:${ITCH_CHANNEL}..."
+          ./butler push itch-build.zip "${ITCH_USER}/${ITCH_GAME}:${ITCH_CHANNEL}" \
             --userversion="${GITHUB_SHA::7}"
           echo "✅ 推送成功！访问 https://${ITCH_USER}.itch.io/${ITCH_GAME}"
