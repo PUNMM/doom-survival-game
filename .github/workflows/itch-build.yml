@@ -90,8 +90,17 @@ jobs:
       # ---- Step 6: 可选 — 自动推送到 itch.io（需要配置 API Key）----
       # 如果在 GitHub Secrets 中设置了 BUTLER_API_KEY，此步骤会自动执行
       # 未设置则跳过，不会报错
+      - name: Install butler
+        if: ${{ secrets.BUTLER_API_KEY != '' }}
+        run: |
+          # 下载 butler（itch.io 官方命令行工具）
+          curl -sSL https://github.com/itchio/butler/releases/download/v17.14.0/butler-linux-amd64 -o butler
+          chmod +x butler
+          sudo mv butler /usr/local/bin/butler
+          butler --version
+
       - name: Deploy to itch.io (optional)
-        if: env.BUTLER_API_KEY != ''
+        if: ${{ secrets.BUTLER_API_KEY != '' }}
         env:
           BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
           # 把下面改成你自己的 itch.io 用户名和游戏 slug
@@ -100,8 +109,6 @@ jobs:
           ITCH_CHANNEL: web  # 渠道名，itch.io 后台可见
         run: |
           echo "🚀 开始推送到 itch.io..."
-          mkdir -p ~/.butler
-          butler --version || curl -L https://itch.io/butler.sh | bash
           butler push itch-build.zip "${ITCH_USER}/${ITCH_GAME}:${ITCH_CHANNEL}" \
             --userversion="${GITHUB_SHA::7}"
           echo "✅ 推送成功！访问 https://${ITCH_USER}.itch.io/${ITCH_GAME}"
